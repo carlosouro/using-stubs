@@ -1,2 +1,204 @@
-# using
-Stubbing and verification for node.js tests. Enables you to validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.
+#using
+![using-stubs NPM package information](https://nodei.co/npm/using-stubs.png "using-stubs NPM package information")
+
+![using-stubs travis-CI build](https://travis-ci.org/carlosouro/using-stubs.svg "using-stubs travis-CI build")
+
+Stubbing and verification for node.js tests.
+Enables you to validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.
+
+This library is inspired on [node-gently](https://github.com/alex-seville/blanket), [MockJS](https://github.com/badoo/MockJS) and [mock-require](https://github.com/boblauer/mock-require).
+
+---
+##API
+
+### <a name="gettingStarted"></a>Getting started
+
+```JavaScript
+var using = require('using')(); //an instance of using
+```
+
+
+### <a name="methods"></a>methods stubbing and verification
+_using(object)('method').expect([countMatch], object.method([[paramMatchers](#paramMatchers)...]), [stubFn]);_
+
+```JavaScript
+var foo = {
+	bar: function(callback){
+		callback("bar!!");
+	}
+}
+
+using(foo)('bar').expect(
+	1,
+	foo.bar(using.aCallback),
+	function(c){
+		c("mock foo.bar()");
+	}
+);
+
+foo.bar(function(response){
+	console.log(response); //logs "mock foo.bar()"
+});
+```
+
+####restore methods
+_using(object)('method').restore();_
+
+```JavaScript
+using(foo)('bar').restore();
+```
+
+
+### <a name="requireMethods"></a>require() module methods
+_var module = using.require(moduleName);_
+
+<sub>Note: module is still executed normally, if you'd rather the module not to be executed at all, see [entire module stubbing](#requireStubbing).</sub>
+
+```JavaScript
+var uProcess = using.require('child_process');
+
+uProcess('exec').expect(
+	using.atLeast(1),
+	uProcess.exec(using.aString, using.anObject, using.aCallback),
+	function(s,o,c){
+		c();
+	}
+);
+```
+
+####restore module methods
+
+```JavaScript
+uProcess('exec').restore();
+```
+
+
+### <a name="requireStubbing"></a>require() stubbing entire module
+_using.require.stub(moduleName, mockModule);_
+
+Stub entire module and avoid the module to be executed at all.
+
+```JavaScript
+using.require.stub('module', {}); //replace module with this empty object
+```
+Of course, we can still verify/stub specific methods in our stubbed object.
+```JavaScript
+var module = using.require('module');
+using(module)('foo').expect(module.foo(/*...*/), /*...*/);
+```
+
+####restore normal module
+_using.require.restore(moduleName);_
+
+```JavaScript
+using.require.restore('module');
+```
+
+
+### <a name="classes"></a>classes and instances
+_var instance = using.require(classModule).instance([[paramMatchers](#paramMatchers)...]);_
+
+Consider the following module ./Cat.js :
+```JavaScript
+function Cat(name){
+	this.name = name;
+}
+Cat.prototype = {
+	pet: function(){
+		return this.name +" "+ randomBehaviour();
+	}
+}
+exports = Cat;
+```
+
+Within our tests, we can stub/verify behaviour on specific class instances via:
+```JavaScript
+var cat = using.require('./Cat').instance(using.aString)
+
+cat('pet').expect(
+	cat.pet(),
+	function(){
+	  return this.name + " purrs.";
+	}
+);
+```
+
+
+
+### <a name="verify"></a>verify all expectations
+_using.verify([msg]);_
+```JavaScript
+using.verify("Something went wrong!");
+```
+
+
+###options and enumerators
+
+#### <a name="paramMatchers"></a>parameter matchers
+
+The simplest way to exactly match a parameter is by specifying it directly.
+```JavaScript
+using(foo)('bar').expect(1, foo.bar(5));
+
+//
+foo.bar(5); //matches
+foo.bar("5"); //does not match
+```
+
+Or, you can use any callback as a matcher (returning true matches)
+```JavaScript
+var matchFrom1to5 = function(param){
+	return typeof(param)==='number' && param > 0 && param <5; // number from 1 to 5
+}
+
+using(foo)('bar').expect(2, foo.bar(matchFrom1to5));
+
+//
+foo.bar(3); //matches
+foo.bar(6); //does not match
+```
+
+using-stubs provides you a few common matchers for easy use
+```JavaScript
+using.aString            //matches any string
+using.aStringLike(regex) //matches the regular expression
+using.anInt              //matches any integer
+using.aNumber            //matches any number
+using.anObject           //matches any object (not null)
+using.anObjectLike(obj)  //deep compares the object
+using.aFunction          //matches any function
+using.typeOf(type)       //tests typeOf(parameter)===type
+using.instanceOf(Class)  //tests instanceOf(parameter)===Class
+using.something          //matches !==undefined
+using.anything           //matches any parameter, even if undefined
+
+using.everything         //special matcher - any arguments from this point onward will be matched
+                         //eg. foo("a", Match.everything) will match foo("a"), foo("a", "one"), foo("a", 1, 2, 3, 4, 5, 6);
+```
+
+
+
+
+
+#### <a name="countMatchers"></a>count matchers
+You can specify an exact match directly
+```JavaScript
+using(foo)('bar').expect(5, foo.bar()); //expects 5 executions
+```
+
+Or use a callback matcher
+```JavaScript
+var matchFrom1to5 = function(param){
+	return typeof(param)==='number' && param > 0 && param <5; // number from 1 to 5
+}
+
+using(foo)('bar').expect(matchFrom1to5, foo.bar()); //expects 1 to 5 executions
+```
+
+using-stubs provides you a few common matchers for easy use
+```JavaScript
+using.never          //it never happens
+using.atLeast(x)     //executed at least x times
+using.atMost(x)      //executed at most x times
+using.between(x, y)  //executed between x and y times
+```

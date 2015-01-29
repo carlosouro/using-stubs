@@ -1,0 +1,44 @@
+{
+  "name": "using-stubs",
+  "description": "Stubbing and verification for node.js tests. Validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.",
+  "version": "0.0.0",
+  "homepage": "",
+  "author": {
+    "name": "Carlos Ouro",
+    "url": "http://odobo.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Odobo/using-stubs.git"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha test/tests.js --reporter dot",
+    "test-coverage": "YOURPACKAGE_COVERAGE=1 ./node_modules/mocha/bin/mocha test/tests.js --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js",
+    "local-test": "./node_modules/mocha/bin/mocha test/tests.js --reporter spec",
+    "local-test-coverage": "YOURPACKAGE_COVERAGE=1 ./node_modules/mocha/bin/mocha test/tests.js --reporter html-cov > temp/cov.html ; open temp/cov.html"
+  },
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "blanket": "^1.1.6",
+    "coveralls": "^2.11.2",
+    "mocha-lcov-reporter": "0.0.1"
+  },
+  "license": "MIT",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "keywords": [
+    "tests",
+    "stubbing",
+    "verify",
+    "expect",
+    "mock",
+    "require",
+    "mock require"
+  ],
+  "dependencies": {
+    "nature-js": "^0.5.0",
+    "mock-require": "^1.0.5"
+  }
+}
