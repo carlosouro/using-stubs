@@ -1,4 +1,4 @@
-#using
+#using-stubs
 ![using-stubs NPM package information](https://nodei.co/npm/using-stubs.png "using-stubs NPM package information")
 
 ![using-stubs travis-CI build](https://travis-ci.org/carlosouro/using-stubs.svg "using-stubs travis-CI build")
@@ -7,6 +7,7 @@ Stubbing and verification for node.js tests.
 Enables you to validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.
 
 This library is inspired on [node-gently](https://github.com/alex-seville/blanket), [MockJS](https://github.com/badoo/MockJS) and [mock-require](https://github.com/boblauer/mock-require).
+
 ---
 #Unfinished - under development!
 
