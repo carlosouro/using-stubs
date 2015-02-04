@@ -137,8 +137,9 @@ _using.verify([msg]);_
 using.verify("Something went wrong!");
 ```
 
-### <a name="fail"></a>fail()
+### <a name="fail"></a>never run a method
 _using(object)('method').fail();_
+
 Expects this method never to be called.
 
 Simplified alias of expecting 0 times matching everything:
