@@ -185,9 +185,9 @@ describe('using-stubs', function(){
 
 	describe('require', function(){
 
-		it('should return a reference object on .require()', function(){
+		it('should return a reference function on .require()', function(){
 			var obj = using.require('./requires/include.js');
-			assert(typeof obj === 'object', 'is an object');
+			assert(typeof obj === 'function', 'is a function');
 			assert(Object.keys(obj).length===0, 'it is empty');
 		})
 

@@ -103,7 +103,9 @@ using.require.restore('module');
 
 
 ### <a name="classes"></a>classes and instances
-_var instance = using.require(classModule).instance([[paramMatchers](#paramMatchers)...]);_
+_var instance = using(ClassModule).instance([countMatch], new ClassMosule([[paramMatchers](#paramMatchers)...]), [stubInstance]);_
+
+<sub>Note: This only works for classes wrapped within require() modules.</sub>
 
 Consider the following module ./Cat.js :
 ```JavaScript
@@ -120,9 +122,13 @@ exports = Cat;
 
 Within our tests, we can stub/verify behaviour on specific class instances via:
 ```JavaScript
-var cat = using.require('./Cat').instance(using.aString)
+var Cat = using.require('./Cat');
 
-cat('pet').expect(
+//be it cat an instance of new Cat(using.aString)
+var cat = using(Cat).instance(new Cat(using.aString));
+
+//example - stub cat.pet()
+using(cat)('pet').expect(
 	cat.pet(),
 	function(){
 	  return this.name + " purrs.";

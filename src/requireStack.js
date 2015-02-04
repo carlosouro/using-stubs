@@ -41,6 +41,11 @@ function getFullPath(path, calledFrom) {
 var intercept = {};
 
 //replace Module._load with our own
+
+//Note: This is ugly, I know.
+//I wish node/commonJS had some standard (non-hack)
+//way of achieving require overrides.
+
 Module._load = function(request, parent) {
 	var fullFilePath = Module._resolveFilename(request, parent);
 
@@ -57,6 +62,7 @@ Module._load = function(request, parent) {
 	if(content.stubs.length>0){
 		//replace with a stub
 		obj = content.stubs[content.stubs.length-1].reference
+
 	} else if(content.originalObject) {
 		//rebuild object
 		obj = content.originalObject.reference;
@@ -68,6 +74,7 @@ Module._load = function(request, parent) {
 		Object.keys(content.originalObject.properties).forEach(function(el){
 			obj[el] = content.originalObject.properties[el];
 		});
+
 	} else {
 		//get real require
 		obj = originalLoader.apply(this, arguments);
@@ -95,7 +102,7 @@ function getElement(fullpath){
 	//create if doesn't exist
 	if(!intercept[fullpath]){
 		intercept[fullpath] = {
-			reference:{},
+			reference:function(){},
 			stubs:[],
 			stub:function(reference, owner){
 				if(!module||!reference||!owner) throw Error('using-stubs: internal requireStack.stub() unexpected params');

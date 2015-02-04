@@ -22,6 +22,10 @@ module.exports = globals.pack.factory(function(pub, prot, unfold){
 		prot.obj.remove(prot.using);
 	}
 
+	pub.instance = function(){
+		throw Error('under implementation for 0.0.4');
+	}
+
 	//verify everything
   prot.verify = function(msg){
   	prot.obj.verify(prot.using, msg);
