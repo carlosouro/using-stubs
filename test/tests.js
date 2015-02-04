@@ -33,6 +33,7 @@ describe('using-stubs', function(){
 
 			//restore test and run checks
 			using(obj)('test').restore();
+			console.log(obj.test)
 			assert(typeof obj.test === 'undefined', 'obj.test should have restored to undefined');
 			assert(typeof obj.test5 !== 'undefined', 'obj.test5 should not have been restored');
 

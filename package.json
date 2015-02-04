@@ -39,6 +39,6 @@
   ],
   "dependencies": {
     "nature-js": "^0.5.0",
-    "mock-require": "^1.0.5"
+    "caller-id": "^0.1.0"
   }
 }
