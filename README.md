@@ -60,7 +60,7 @@ _var module = using.require(moduleName);_
 ```JavaScript
 var uProcess = using.require('child_process');
 
-uProcess('exec').expect(
+using(uProcess)('exec').expect(
 	using.atLeast(1),
 	uProcess.exec(using.aString, using.anObject, using.aCallback),
 	function(s,o,c){
@@ -113,6 +113,8 @@ Cat.prototype = {
 }
 exports = Cat;
 ```
+<!--
+	TO-DO
 
 Within our tests, we can stub/verify behaviour on specific class instances via:
 ```JavaScript
@@ -125,6 +127,7 @@ cat('pet').expect(
 	}
 );
 ```
+-->
 
 
 
@@ -134,8 +137,19 @@ _using.verify([msg]);_
 using.verify("Something went wrong!");
 ```
 
+### <a name="fail"></a>fail()
+_using(object)('method').fail();_
+Expects this method never to be called.
 
-###options and enumerators
+Simplified alias of expecting 0 times matching everything:
+```JavaScript
+using(object)('method').fail();
+//simplified alias for:
+using(foo)('bar').expect(0, foo.bar(using.everything));
+```
+
+
+###matchers
 
 #### <a name="paramMatchers"></a>parameter matchers
 
@@ -173,9 +187,9 @@ using.aFunction          //matches any function
 using.typeOf(type)       //tests typeOf(parameter)===type
 using.instanceOf(Class)  //tests instanceOf(parameter)===Class
 using.something          //matches !==undefined
-using.anything           //matches any parameter, even if undefined
+using.anything           //matches any param as long as it is set (even undefined)
 
-using.everything         //special matcher - any arguments from this point onward will be matched
+using.everything         //special matcher - all arguments from this point onward will be matched, even if none is set
                          //eg. foo("a", Match.everything) will match foo("a"), foo("a", "one"), foo("a", 1, 2, 3, 4, 5, 6);
 ```
 
@@ -200,7 +214,6 @@ using(foo)('bar').expect(matchFrom1to5, foo.bar()); //expects 1 to 5 executions
 
 using-stubs provides you a few common matchers for easy use
 ```JavaScript
-using.never          //it never happens
 using.atLeast(x)     //executed at least x times
 using.atMost(x)      //executed at most x times
 using.between(x, y)  //executed between x and y times

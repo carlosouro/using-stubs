@@ -114,4 +114,8 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 		prot.obj.verifyProp(prot.using, prot.prop);
   }
 
+  pub.fail = function(){
+  	pub.expect(0, prot.ref[prot.prop](prot.using.everything));
+  }
+
 });
