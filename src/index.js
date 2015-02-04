@@ -5,7 +5,8 @@ global.using = {
 	pack : nature.createPackage(),
 	EVERYTHING_MATCHER : {},
 	PROP_NOT_EXISTENT : {},
-	STUB_NOT_HIT : {}
+	STUB_NOT_HIT : {},
+	TARGET_CONTEXT: {}
 }
 
 //get main wrapper

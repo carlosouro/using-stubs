@@ -40,7 +40,7 @@ module.exports = globals.pack.from(UsingWrapper).factory(function(pub, prot, unf
 
 
   //restore everything
-  pub.restoreAll = function(){
+  pub.restore = function(){
   	requireStack.restore(pub);
   	objectStack.restore(pub);
   }

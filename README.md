@@ -51,6 +51,13 @@ _using(object)('method').restore();_
 using(foo)('bar').restore();
 ```
 
+####restore objects (all methods)
+_using(object).restore();_
+
+```JavaScript
+using(foo).restore();
+```
+
 
 ### <a name="requireMethods"></a>require() module methods
 _var module = using.require(moduleName);_
@@ -135,6 +142,12 @@ cat('pet').expect(
 _using.verify([msg]);_
 ```JavaScript
 using.verify("Something went wrong!");
+```
+
+### <a name="restore"></a>restore everything done with this _using_ instance
+_using.restore();_
+```JavaScript
+using.restore();
 ```
 
 ### <a name="fail"></a>never run a method

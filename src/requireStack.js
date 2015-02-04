@@ -53,7 +53,35 @@ Module._load = function(request, parent) {
 	var content = intercept[fullFilePath];
 
 	//use original require or latest stub
-	var obj = content.stubs.length>0 ? content.stubs[content.stubs.length-1] : originalLoader.apply(this, arguments);
+	var obj;
+	if(content.stubs.length>0){
+		//replace with a stub
+		obj = content.stubs[content.stubs.length-1].reference
+	} else if(content.originalObject) {
+		//rebuild object
+		obj = content.originalObject.reference;
+		//delete all properties
+		Object.keys(obj).forEach(function(el){
+			delete obj[el];
+		});
+		//re-assign original properties
+		Object.keys(content.originalObject.properties).forEach(function(el){
+			obj[el] = content.originalObject.properties[el];
+		});
+	} else {
+		//get real require
+		obj = originalLoader.apply(this, arguments);
+		//keep our object for reference
+		content.originalObject = {
+			reference: obj,
+			properties: {}
+		}
+		//save all original properties
+		Object.keys(obj).forEach(function(el){
+			content.originalObject.properties[el] = obj[el];
+		});
+	}
+
 
 	//merge object with our stubs
 	objectStack(content.reference).assignTarget(obj);
@@ -95,7 +123,7 @@ module.exports = function(module, callerFilePath){
 	return getElement(getFullPath(module, callerFilePath));
 }
 module.exports.restore = function(owner){
-	Object.keys(intercept).forEach(function(obj){
-		obj.remove(owner);
+	Object.keys(intercept).forEach(function(path){
+		intercept[path].remove(owner);
 	});
 }

@@ -21,13 +21,16 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 		//our expect( foo.bar(...) )
 		obj[prop] = function(){
 			var matchers = Array.prototype.slice.call(arguments);
-			var that = this;
+			//define target context
+			var targetContext = this === obj ? globals.TARGET_CONTEXT : this;
 
 			//create a matcher function based on this information
 			prot.matcher = function(context, args){
 
 				//different context is an immediate fail
-				if(context !== that) return false;
+				if(targetContext===globals.TARGET_CONTEXT ? context !== prot.obj.target : context !== targetContext) {
+					return false;
+				}
 
 				//args can only be different length in the special case of EVERYTHING_MATCHER
 				if(matchers[matchers.length-1]!== globals.EVERYTHING_MATCHER ? args.length!==matchers.length : args.length<matchers.length-1){
@@ -37,7 +40,7 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 				//size matches - now let's test each of the matchers
 				var i;
 				for(i=0; i<args.length; i++){
-					if( typeof matchers[i] !== 'function' ? args[i]!==matchers[i] : !matchers[i](args[i]) ){
+					if( typeof matchers[i] !== 'function' ? globals.EVERYTHING_MATCHER!==matchers[i] && args[i]!==matchers[i] : !matchers[i](args[i]) ){
 						return false;
 					}
 				}

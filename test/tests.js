@@ -3,7 +3,7 @@ var assert = require('assert');
 var usingFactory, using;
 
 //blanket to test nature.js file coverage
-if(process.env.YOURPACKAGE_COVERAGE) require('blanket')({"data-cover-only":'src/index.js'});
+if(process.env.YOURPACKAGE_COVERAGE) require('blanket')({"data-cover-only":'src'});
 
 describe('using-stubs', function(){
 
@@ -33,7 +33,6 @@ describe('using-stubs', function(){
 
 			//restore test and run checks
 			using(obj)('test').restore();
-			console.log(obj.test)
 			assert(typeof obj.test === 'undefined', 'obj.test should have restored to undefined');
 			assert(typeof obj.test5 !== 'undefined', 'obj.test5 should not have been restored');
 
@@ -93,8 +92,8 @@ describe('using-stubs', function(){
 			assert(passed, 'stubbing works');
 		});
 
-		it('should using.restoreAll() correctly', function(){
-			using.restoreAll();
+		it('should using.restore() correctly', function(){
+			using.restore();
 
 			assert(Object.keys(obj).length===0, 'reset object size');
 			using.verify();
@@ -142,13 +141,30 @@ describe('using-stubs', function(){
 		});
 
 		it('should restore previous references correctly', function(){
-			using.restoreAll();
+			using.restore();
 
 			assert(obj.test === tempRef, 'it should fail');
 		});
 
+		it('should .fail()', function(){
+			using(obj)('test').fail();
+
+			obj.test();
+
+			assert.throws(function(){using.verify();}, Error, 'it should fail');
+
+			using.restore();
+		});
+
+		//it('should reset counters on using(foo)(bar).reset()');
+
+		//it('should reset counters on using(foo).reset()');
+
+		//it('should reset counters on using.reset()');
 
 	})
+
+
 
 	describe('internal checks', function(){
 		it('should verify params on .expect()', function(){
@@ -167,6 +183,70 @@ describe('using-stubs', function(){
 		});
 	})
 
+	describe('require', function(){
+
+		it('should return a reference object on .require()', function(){
+			var obj = using.require('./requires/include.js');
+			assert(typeof obj === 'object', 'is an object');
+			assert(Object.keys(obj).length===0, 'it is empty');
+		})
+
+		it('should allow us to set expectations', function(){
+			var obj = using.require('./requires/include.js');
+
+			using(obj)('test').expect(1, obj.test());
+			using(obj)('testTrue').expect(1, obj.testTrue("hello"));
+			using(obj)('testFalse').expect(1, obj.testFalse(), function(){
+				return true;
+			});
+			//require external test
+			require('./requires/test-include-overriden.js');
+		});
+
+		it('should verify set expectations', function(){
+			//verify
+			using.verify();
+		})
+
+		it('should using.require.restore(module)', function(){
+			using.require.restore('./requires/include.js');
+			//require external test
+			require('./requires/folder/test-include-default.js');
+			//verify
+			using.verify();
+		});
+
+		it('should allow stubbing', function(){
+			//some expectation before
+			var obj = using.require('./requires/include.js');
+			using(obj)('test').expect(1, obj.test());
+			//a stub
+			using.require.stub('./requires/include.js', {
+				testTrue:function(){return false},
+				testFalse:function(){return true}
+			});
+			//some more expectations after
+			obj = using.require('./requires/include.js');
+			using(obj)('testTrue').expect(1, obj.testTrue(using.everything), function(){
+				return true;
+			});
+			using(obj)('testFalse').expect(1, obj.testFalse());
+
+			//require external test
+			require('./requires/test-include-overriden2.js');
+			//verify
+			using.verify();
+		});
+
+		it('should restore also stubs using.restore()', function(){
+			using.restore();
+			//require external test
+			require('./requires/folder/test-include-default2.js');
+			//verify
+			using.verify();
+		});
+
+	})
 
 	describe('matchers', function(){
 
