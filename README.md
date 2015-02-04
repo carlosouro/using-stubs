@@ -59,7 +59,7 @@ using(foo).restore();
 ### <a name="requireMethods"></a>require() module methods
 _var module = using.require(moduleName);_
 
-<sub>Note: module is still executed normally, if you'd rather the module not to be executed at all, see [entire module stubbing](#requireStubbing).</sub>
+<sub>Note: module is still executed normally when requested, if you'd rather the module not to be executed at all, see [entire module stubbing](#requireStubbing).</sub>
 
 ```JavaScript
 var uProcess = using.require('child_process');
@@ -117,8 +117,6 @@ Cat.prototype = {
 }
 exports = Cat;
 ```
-<!--
-	TO-DO
 
 Within our tests, we can stub/verify behaviour on specific class instances via:
 ```JavaScript
@@ -131,7 +129,6 @@ cat('pet').expect(
 	}
 );
 ```
--->
 
 
 
@@ -193,12 +190,14 @@ using.aStringLike(regex) //matches the regular expression
 using.anInt              //matches any integer
 using.aNumber            //matches any number
 using.anObject           //matches any object (not null)
-using.anObjectLike(obj)  //deep compares the object
 using.aFunction          //matches any function
 using.typeOf(type)       //tests typeOf(parameter)===type
 using.instanceOf(Class)  //tests instanceOf(parameter)===Class
 using.something          //matches !==undefined
 using.anything           //matches any param as long as it is set (even undefined)
+
+using.anObjectLike(obj, [boolean strict])  //deep compare to given object
+                         //strict - defaults to non-strict (==) comparison (false)
 
 using.everything         //special matcher - all arguments from this point onward will be matched, even if none is set
                          //eg. foo("a", Match.everything) will match foo("a"), foo("a", "one"), foo("a", 1, 2, 3, 4, 5, 6);

@@ -2,6 +2,7 @@
 var globals = global.using;
 
 var requireStack = require('./requireStack');
+var deepEqual = require('deep-equal');
 var Using;
 
 //UsingWrapper
@@ -30,6 +31,30 @@ module.exports = globals.pack.factory(function(pub, prot){
     }
   }
   pub.everything = globals.EVERYTHING_MATCHER;
+  pub.aString = pub.typeOf('string');
+  pub.aNumber = pub.typeOf('number');
+  pub.aFunction = pub.typeOf('function');
+
+  pub.aStringLike = function(regex){
+  	return function(str){
+  		return typeof str === 'string' && str.match(regex);
+  	}
+  }
+  pub.anInt = function(integer){
+  	return typeof integer === 'number' && integer.toString().indexOf('.')===-1;
+  }
+  pub.anObject = function(obj){
+  	return typeof obj === 'object' && obj!==null;
+  }
+  pub.anObjectLike = function(base, strict){
+  	return function(obj){
+  		return deepEqual(obj, base, {strict:strict});
+  	}
+  }
+  pub.something = function(obj){
+  	return typeof obj !== 'undefined';
+  }
+  pub.anything = function(){return true;}
 
 
   //COUNT MATCHERS
