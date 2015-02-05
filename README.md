@@ -30,7 +30,7 @@ var foo = {
 
 using(foo)('bar').expect(
 	1,
-	foo.bar(using.aCallback),
+	foo.bar(using.aFunction),
 	function(c){
 		c("mock foo.bar()");
 	}
@@ -66,12 +66,13 @@ var uProcess = using.require('child_process');
 
 using(uProcess)('exec').expect(
 	using.atLeast(1),
-	uProcess.exec(using.aString, using.anObject, using.aCallback),
+	uProcess.exec(using.aString, using.anObject, using.aFunction),
 	function(s,o,c){
 		c();
 	}
 );
 ```
+require
 
 ####restore module methods
 
@@ -103,7 +104,7 @@ using.require.restore('module');
 
 
 ### <a name="classes"></a>classes and instances
-_var instance = using(ClassModule).instance([countMatch], new ClassMosule([[paramMatchers](#paramMatchers)...]), [stubInstance]);_
+_var instance = using(ClassModule).instance([countMatch], new ClassModule([[paramMatchers](#paramMatchers)...]), [stubInstance]);_
 
 <sub>Note: This only works for classes wrapped within require() modules.</sub>
 
@@ -117,7 +118,7 @@ Cat.prototype = {
 		return this.name +" "+ randomBehaviour();
 	}
 }
-exports = Cat;
+module.exports = Cat;
 ```
 
 Within our tests, we can stub/verify behaviour on specific class instances via:
