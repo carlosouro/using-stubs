@@ -303,6 +303,61 @@ describe('using-stubs', function(){
 			using.verify();
 		});
 
+	});
+
+	describe('classes and instances', function(){
+		it('should override class instance', function(){
+
+			var Cat = using.require('./requires/folder/Cat.js');
+
+			//override instance constructor
+			var snuffles = using(Cat).instance(1, new Cat("Snuffles"), function(){
+				this.name = "Snowball";
+			});
+			//stub snuffles.pet("Snuffles")
+			using(snuffles)('pet').expect(1, snuffles.pet("Snuffles"), function(){
+				return 'Cat screams: "call me '+this.name+' - I like it better';
+			});
+			//verify snuffles.pet()
+			using(snuffles)('pet').expect(1, snuffles.pet());
+
+
+			var furrball = using(Cat).instance(new Cat("Furrball"));
+			//stub furrball.pet("hard")
+			using()('pet').expect(
+				1,
+				furrball.pet("hard"),
+				function(){
+					return "Furrball runs away";
+				}
+			);
+
+
+			//run our tests
+			require('./requires/test-class-overriden');
+
+			//verify all
+			using.verify();
+		});
+
+		it('should restore any later use of class, even if already loaded', function(){
+			//before restore, load the Cat class
+			var runner = require('./requires/test-class-default-preloaded.js');
+
+			//restore class
+			using.restore();
+
+			//run default test on preloaded Cat class
+			runner();
+
+			//verify (nothing)
+			using.verify();
+		});
+
+		it('any further require of class works as default', function(){
+			//before restore, load the Cat class
+			require('./requires/test-class-default.js');
+		})
 	})
 
 	describe('matchers', function(){
