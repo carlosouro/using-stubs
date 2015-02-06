@@ -21,40 +21,95 @@ var using = require('using')(); //an instance of using
 ### <a name="methods"></a>methods stubbing and verification
 _using(object)('method').expect([countMatch], object.method([[paramMatchers](#paramMatchers)...]), [stubFn]);_
 
+**Consider the object:**
 ```JavaScript
 var foo = {
-	bar: function(callback){
-		callback("bar!!");
+	bar: function(someone){
+		return someone+" goes into a bar";
 	}
 }
+```
 
+**Setup: Just stubbing:**
+```JavaScript
 using(foo)('bar').expect(
-	1,
-	foo.bar(using.aFunction),
-	function(c){
-		c("mock foo.bar()");
+	foo.bar(using.aString),	//call match clause
+	function(someone){	//stub
+		return someone+" stayed at home";
 	}
 );
-
-foo.bar(function(response){
-	console.log(response); //logs "mock foo.bar()"
-});
 ```
 
-####restore methods
-_using(object)('method').restore();_
+**Setup: Just verification:**
+```JavaScript
+using(foo)('bar').expect(1, foo.bar("John"));
+```
+
+**Setup: Stubbing + verification + context:**
+```JavaScript
+var someScope = {};
+
+using(foo)('bar').expect(
+	1, //countMatcher
+	foo.bar.apply(someScope, ["Anna"]),	//call match clause w/ context
+	function(){	//stub
+		return "Anna was the only one going to the bar";
+	}
+);
+```
+
+**Running the test**
+```JavaScript
+foo.bar("Peter"); //Peter stayed at home
+foo.bar("John"); //John stayed at home (*)
+foo.bar.call(someScope, "Anna"); //Anna was the only one going to the bar
+
+//* note that we did not stub John specifically
+//therefore he matches both the verification but also the _using.aString_ stub
+```
+
+### <a name="verify"></a>verify all expectations
+_using.verify([msg]);_
+
+Verifies that all countMatchers match the number of executions.
 
 ```JavaScript
-using(foo)('bar').restore();
+using.verify("Our test case failed");
 ```
 
-####restore objects (all methods)
+####verify only one object (all methods)
+_using(object).verify();_
+
+```JavaScript
+using(foo).verify();
+```
+
+####verify only one method
+_using(object)('method').verify();_
+
+```JavaScript
+using(foo)('bar').verify();
+```
+
+### <a name="restore"></a>restore everything done with this _using_ instance (including require/classes)
+_using.restore();_
+```JavaScript
+using.restore();
+```
+
+####restore only one object (all methods)
 _using(object).restore();_
 
 ```JavaScript
 using(foo).restore();
 ```
 
+####restore only a method
+_using(object)('method').restore();_
+
+```JavaScript
+using(foo)('bar').restore();
+```
 
 ### <a name="requireMethods"></a>require() module methods
 _var module = using.require(moduleName);_
@@ -137,20 +192,6 @@ using(cat)('pet').expect(
 );
 ```
 
-
-
-### <a name="verify"></a>verify all expectations
-_using.verify([msg]);_
-```JavaScript
-using.verify("Something went wrong!");
-```
-
-### <a name="restore"></a>restore everything done with this _using_ instance
-_using.restore();_
-```JavaScript
-using.restore();
-```
-
 ### <a name="fail"></a>never run a method
 _using(object)('method').fail();_
 
@@ -209,8 +250,6 @@ using.anObjectLike(obj, [boolean strict])  //deep compare to given object
 using.everything         //special matcher - all arguments from this point onward will be matched, even if none is set
                          //eg. foo("a", Match.everything) will match foo("a"), foo("a", "one"), foo("a", 1, 2, 3, 4, 5, 6);
 ```
-
-
 
 
 

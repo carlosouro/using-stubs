@@ -156,6 +156,63 @@ describe('using-stubs', function(){
 			using.restore();
 		});
 
+		it('should match context call (.apply())', function(){
+			var scope = {}, passed = false;
+
+			using(obj)('test').expect(
+				1,
+				obj.test.apply(scope, [using.aBoolean]),
+				function(val){
+					passed = val;
+				}
+			);
+
+			obj.test.apply(scope, [true]); //matches
+			obj.test(false); //does not match
+
+			using.verify();
+
+			assert(passed, 'it should have executed stub');
+
+			using.restore();
+		});
+
+		it('should validate the case given on documentation', function(){
+			var foo = {
+				bar: function(someone){
+					return someone+" goes into a bar";
+				}
+			}
+
+			using(foo)('bar').expect(
+				foo.bar(using.aString),	//call match clause
+				function(someone){	//stub
+					return someone+" stayed at home";
+				}
+			);
+
+			using(foo)('bar').expect(1, foo.bar("John"));
+
+			var someScope = {};
+
+			using(foo)('bar').expect(
+				1, //countMatcher
+				foo.bar.apply(someScope, ["Anna"]),	//call match clause w/ context
+				function(){	//stub
+					return "Anna was the only one going to the bar";
+				}
+			);
+
+			//Running the test
+			assert(foo.bar("John")==='John stayed at home', 'John failed'); //John goes into a bar
+			assert(foo.bar.call(someScope, "Anna")==='Anna was the only one going to the bar', 'Anna failed') //Anna also went to the bar
+			assert(foo.bar("Peter")==='Peter stayed at home', 'Peter failed') //Peter stayed at home
+
+			using.verify();
+
+			using.restore();
+		})
+
 		//it('should reset counters on using(foo)(bar).reset()');
 
 		//it('should reset counters on using(foo).reset()');
@@ -249,7 +306,7 @@ describe('using-stubs', function(){
 	})
 
 	describe('matchers', function(){
-
+		//TO-DO
 	})
 
 });

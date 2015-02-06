@@ -33,6 +33,7 @@ module.exports = globals.pack.factory(function(pub, prot){
   pub.everything = globals.EVERYTHING_MATCHER;
   pub.aString = pub.typeOf('string');
   pub.aNumber = pub.typeOf('number');
+  pub.aBoolean = pub.typeOf('boolean');
   pub.aFunction = pub.typeOf('function');
 
   pub.aStringLike = function(regex){
