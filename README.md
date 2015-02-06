@@ -65,11 +65,11 @@ foo.bar("John"); //John stayed at home (*)
 foo.bar.call(someScope, "Anna"); //Anna was the only one going to the bar
 
 //* note that we did not stub John specifically
-//therefore he matches both the verification but also the _using.aString_ stub
+//therefore he matches both the verification but also the using.aString stub
 ```
 
 ### <a name="verify"></a>verify all expectations
-_using.verify([msg]);_
+_using.verify([errorMsg]);_
 
 Verifies that all countMatchers match the number of executions.
 
@@ -78,14 +78,14 @@ using.verify("Our test case failed");
 ```
 
 ####verify only one object (all methods)
-_using(object).verify();_
+_using(object).verify([errorMsg]);_
 
 ```JavaScript
 using(foo).verify();
 ```
 
 ####verify only one method
-_using(object)('method').verify();_
+_using(object)('method').verify([errorMsg]);_
 
 ```JavaScript
 using(foo)('bar').verify();
