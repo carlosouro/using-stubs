@@ -6,7 +6,8 @@ global.using = {
 	EVERYTHING_MATCHER : {},
 	PROP_NOT_EXISTENT : {},
 	STUB_NOT_HIT : {},
-	TARGET_CONTEXT: {}
+	TARGET_CONTEXT: {},
+	NO_MATCH:{}
 }
 
 //get main wrapper

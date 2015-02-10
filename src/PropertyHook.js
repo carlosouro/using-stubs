@@ -28,25 +28,12 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 			prot.matcher = function(context, args){
 
 				//different context is an immediate fail
-				if(targetContext===globals.TARGET_CONTEXT ? context !== prot.obj.target : context !== targetContext) {
+				if(targetContext===globals.TARGET_CONTEXT ? prot.obj.instances.indexOf(context)===-1 : context !== targetContext) {
 					return false;
 				}
 
-				//args can only be different length in the special case of EVERYTHING_MATCHER
-				if(matchers[matchers.length-1]!== globals.EVERYTHING_MATCHER ? args.length!==matchers.length : args.length<matchers.length-1){
-					return false;
-				}
+				return helpers.argsMatcher(args, matchers);
 
-				//size matches - now let's test each of the matchers
-				var i;
-				for(i=0; i<args.length; i++){
-					if( typeof matchers[i] !== 'function' ? globals.EVERYTHING_MATCHER!==matchers[i] && args[i]!==matchers[i] : !matchers[i](args[i]) ){
-						return false;
-					}
-				}
-
-				//all passed - we have a match
-				return true;
 			}
 
 			//return an internal identifier
@@ -59,22 +46,9 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 	pub.expect = function(c, m, s){
 
 		//organise/validate params
-		if(c===prot.indentifier){
-			if(typeof m === 'function'){
-				prot.stub = m;
-			} else if(typeof m !== 'undefined'){
-				throw new Error("using-stubs: .expect() called with unexpected set of arguments")
-			}
-		} else if(m===prot.indentifier){
-			prot.countsMatcher = c;
-			if(typeof s === 'function'){
-				prot.stub = s;
-			} else if(typeof s !== 'undefined'){
-				throw new Error("using-stubs: .expect() called with unexpected set of arguments")
-			}
-		} else {
-			throw new Error("using-stubs: .expect() called with unexpected set of arguments")
-		}
+		var opts = helpers.expectParams(prot.indentifier, c, m, s);
+		prot.countsMatcher = opts.countsMatcher;
+		prot.stub = opts.stub;
 
 		//replace our function
 		helpers.restoreOrigValue(prot.ref, prot.prop, prot.preExpectValue);
@@ -83,6 +57,7 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 	}
 
 	prot.run = function(context, args){
+
 		//does it match?
 		if(prot.matcher(context, args)){
 			//match!
@@ -92,9 +67,10 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 				return prot.stub.apply(context, args);
 			}
 
+			return globals.STUB_NOT_HIT; //tells objectStack processor that no stub was processed
 		}
 
-		return globals.STUB_NOT_HIT; //tells objectStack processor that no stub was processed
+		return globals.NO_MATCH; //tells objectStack processor that didn't match
 	}
 
 	//restore method
@@ -105,10 +81,9 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 
 	//verify this one
 	prot.validate = function(msg){
-		msg = (msg || "using-stubs:")+ " ";
   	if(typeof prot.countsMatcher !== 'undefined' && (typeof prot.countsMatcher === 'function' ? !prot.countsMatcher(prot.counts) : prot.countsMatcher!==prot.counts) ){
   		//test failed
-  		throw new Error(msg+"it failed"); //TO-DO - improve default message...
+  		throw new Error(msg || "using-stubs: verify() failed"); //TO-DO - improve default message...
   	}
   }
 
