@@ -231,6 +231,15 @@ foo.bar(3); //matches
 foo.bar(6); //does not match
 ```
 
+Parameter matching even works on context
+```JavaScript
+using(foo)('bar').expect(1, foo.bar.call(using.anObjectLike({'a':'a'}), 5));
+
+//
+foo.bar.apply({'a':'a'}, [5]); //matches
+foo.bar(5); //does not match
+```
+
 using-stubs provides you a few common matchers for easy use
 ```JavaScript
 using.aString            //matches any string

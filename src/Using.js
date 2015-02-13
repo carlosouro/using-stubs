@@ -15,7 +15,9 @@ module.exports = globals.pack.from(UsingWrapper).factory(function(pub, prot, unf
 
 	//what running the factory method does (required)
   prot.scope = function(obj){
-  	return objectStack(obj).getObjHook(pub);
+  	var obj = objectStack(obj).getObjHook(pub);
+  	unfold(obj).prepare();
+  	return obj;
 	}
 	prot.createObjectHook = function(obj){
 		return objectHook(obj, pub);

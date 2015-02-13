@@ -8,14 +8,12 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 
 	prot.counts = 0;
 
-	prot.construct = function(obj, args){
+	prot.construct = function(obj, matchers){
 		pub.reference = obj;
 
 		//create a matcher function based on this information
 		prot.matcher = function(args){
-
 			return helpers.argsMatcher(args, matchers);
-
 		}
 	}
 
@@ -25,8 +23,8 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 			//match!
 			prot.counts++;
 
-			if(prot.stub) {
-				return prot.stub.apply(context, args);
+			if(pub.stub) {
+				return pub.stub;
 			}
 
 			return globals.STUB_NOT_HIT; //tells objectStack processor that no stub was processed

@@ -78,34 +78,61 @@ Module._load = function(request, parent) {
 		var origConstructor = obj;
 		obj = function(){
 			var args = Array.prototype.slice.call(arguments);
+
+			var i = -1;
+			var match, constructor, hook;
+
 			if(content && content.constructors.length>0){
-				var i;
+
+				i = content.constructors.length
+
 				//direction is relevant!
-				for(i=0; i<content.constructors.length; i++){
+				while(i--){
+
 					hook = content.constructors[i].hook;
-					ret = hook.run(args);	//run match/stub
+					match = hook.run(args);	//run match/stub
 
 					//if no match carry on
-					if(ret===globals.NO_MATCH) continue;
+					if(match===globals.NO_MATCH) continue;
 
-					//if there was a stub
-					//run constructor
-					if(ret!==globals.STUB_NOT_HIT) ret.apply(this, args);
-
-					//found a match, let's apply our overrides
-					objectStack(content.constructors[i].reference).addInstance(this);
-
-					//if there was a stub
-					//stop running and return it
-					if(ret!==globals.STUB_NOT_HIT) return this;
+					//only 1 match allowed
+					break;
 				}
 
-				//no matches
-				if(i===content.constructors.length){
-					//run original constructor
-					obj.apply(this, args);
-				}
 			}
+
+			//copy all prototype content
+			var scope = this;
+			Object.keys(origConstructor.prototype).forEach(function(k){
+				scope[k] = origConstructor.prototype[k];
+			});
+
+			//no matches
+			if(i === -1 || match===globals.STUB_NOT_HIT){
+				//save original constructor
+				constructor = origConstructor;
+			} else {
+				constructor = match;
+
+				Object.keys(constructor.prototype).forEach(function(k){
+					scope[k] = constructor.prototype[k];
+				});
+			}
+
+
+
+			//run constructor
+			constructor.apply(this, args);
+
+			//apply objectstacks - order is important
+			if(i !== -1) {
+				var obj = content.constructors[i].reference;
+				var stackObject = objectStack(obj);
+				//assign this as the original object
+				stackObject.assignTarget(this, true);
+				stackObject.addInstance(this, true);
+			}
+
 		}
 	}
 
@@ -124,22 +151,25 @@ function getElement(fullpath){
 			reference:function(){
 				//this method server as setup base for "new reference()" for classes
 				var args = Array.prototype.slice.call(arguments);
-				if(intercept[fullpath] && intercept[fullpath].transitionalInstanceState){
-					//new instance setup - save the hook for re-use in instance() expect params
-					intercept[fullpath].transitionalInstanceState = intercept[fullpath].setupInstance(this, args, intercept[fullpath].transitionalInstanceState);
 
-				} else {
-					throw new Error("using-stubs: unexpected mock contructor - use only with using(Class).instance(new Class());")
-				}
+				var self = intercept[fullpath];
+				self.temporaryInstanceHook = new InstanceHook(this, args);
 			},
-			setupInstance: function(reference, args, owner){
-				var instanceHook = new InstanceHook(reference, args);
+			saveInstance: function(owner, opts){
+
+				//add opts to hook
+				this.temporaryInstanceHook.countsMatcher = opts.countsMatcher;
+				this.temporaryInstanceHook.stub = opts.stub;
+
+				//save
 				this.constructors.push({
-					reference:reference,
+					reference:this.temporaryInstanceHook.reference,
 					owner:owner,
-					hook: instanceHook
+					hook: this.temporaryInstanceHook
 				});
-				return instanceHook;
+
+				//remove cache
+				delete this.temporaryInstanceHook;
 			},
 			constructors:[],
 			stubs:[],
@@ -157,7 +187,7 @@ function getElement(fullpath){
 					return true;
 				});
 				//remove constructors
-				this.stubs = this.constructors.filter(function(e){
+				this.constructors = this.constructors.filter(function(e){
 					if(e.owner === owner) {
 						//remove relevant objectStack instance stuff
 						objectStack(e.reference).remove(owner);

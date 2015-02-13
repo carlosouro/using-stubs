@@ -157,17 +157,17 @@ describe('using-stubs', function(){
 		});
 
 		it('should match context call (.apply())', function(){
-			var scope = {}, passed = false;
+			var passed = false;
 
 			using(obj)('test').expect(
 				1,
-				obj.test.apply(scope, [using.aBoolean]),
+				obj.test.apply(using.anObjectLike({foo:'bar'}), [using.aBoolean]),
 				function(val){
 					passed = val;
 				}
 			);
 
-			obj.test.apply(scope, [true]); //matches
+			obj.test.apply({foo:'bar'}, [true]); //matches
 			obj.test(false); //does not match
 
 			using.verify();
@@ -310,13 +310,18 @@ describe('using-stubs', function(){
 
 			var Cat = using.require('./requires/folder/Cat.js');
 
-			//override instance constructor
-			var snuffles = using(Cat).instance(1, new Cat("Snuffles"), function(){
+			//override Class
+			var StubClass = function(){
 				this.name = "Snowball";
-			});
+			}
+			StubClass.prototype.hello = function(){
+				return this.name +' says hi';
+			}
+			var snuffles = using(Cat).instance(1, new Cat("Snuffles"), StubClass);
+
 			//stub snuffles.pet("Snuffles")
 			using(snuffles)('pet').expect(1, snuffles.pet("Snuffles"), function(){
-				return 'Cat screams: "call me '+this.name+' - I like it better';
+				return 'Cat screams: "call me '+this.name+' - I like it better"';
 			});
 			//verify snuffles.pet()
 			using(snuffles)('pet').expect(1, snuffles.pet());
@@ -324,7 +329,7 @@ describe('using-stubs', function(){
 
 			var furrball = using(Cat).instance(new Cat("Furrball"));
 			//stub furrball.pet("hard")
-			using()('pet').expect(
+			using(furrball)('pet').expect(
 				1,
 				furrball.pet("hard"),
 				function(){

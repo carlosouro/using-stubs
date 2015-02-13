@@ -202,13 +202,16 @@ var StackElement = globals.pack.create(function(pub, prot, unfold){
 
 	}
 
-	pub.addInstance = function(instance, original){
+	pub.addInstance = function(instance, debug){
 		//check if instance is already added instance
 		if(pub.instances.indexOf(instance)!==-1) return;
 
 		//copy necessary stuff over to new instance
 		Object.keys(pub.props).forEach(function(el){
-			instance[el] = pub.props[el].callback; //assign callback
+			//there may not be any override setup
+			if(pub.props[el].callback){
+				instance[el] = pub.props[el].callback; //assign callback
+			}
 		});
 
 		//add instance to the stack

@@ -27,11 +27,19 @@ module.exports = globals.pack.create(function(pub, prot, unfold){
 			//create a matcher function based on this information
 			prot.matcher = function(context, args){
 
-				//different context is an immediate fail
-				if(targetContext===globals.TARGET_CONTEXT ? prot.obj.instances.indexOf(context)===-1 : context !== targetContext) {
-					return false;
+				//CONTEXT MATCHING
+				//let's check if we are targetting an instance
+				if(targetContext===globals.TARGET_CONTEXT){
+					if(prot.obj.instances.indexOf(context)===-1) return false;
+
+				//let's see if we have a literal match
+				} else if(context !== targetContext){
+					//otherwise let's check if this is a function matcher and if it matches
+					if(typeof targetContext !== 'function') return false;
+					if(!targetContext(context)) return false;
 				}
 
+				//match arguments
 				return helpers.argsMatcher(args, matchers);
 
 			}
