@@ -1,7 +1,7 @@
 {
   "name": "using-stubs",
   "description": "Stubbing and verification for node.js tests. Validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "",
   "author": {
     "name": "Carlos Ouro",

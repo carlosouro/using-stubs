@@ -13,24 +13,10 @@ var InstanceHook = require('./InstanceHook');
 
 //helper
 function getFullPath(path, calledFrom) {
-  var needsFullPath = true
-    , resolvedPath
-    , isExternal
-    ;
-
   try {
-    resolvedPath = require.resolve(path);
-    isExternal = resolvedPath.indexOf('/node_modules/') !== -1;
-
-    needsFullPath = resolvedPath !== path && !isExternal;
-
-    if (isExternal) {
-      path = resolvedPath;
-    }
-  } catch(e) { }
-
-  if (needsFullPath) {
-    path = join(dirname(calledFrom), path);
+    path = require.resolve(path);
+  } catch(e) {
+  	path = join(dirname(calledFrom), path);
     path = Module._resolveFilename(path);
   }
 
