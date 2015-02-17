@@ -303,6 +303,24 @@ describe('using-stubs', function(){
 			using.verify();
 		});
 
+		it('should be able to stub a node_modules dependency (deep-equal)', function(){
+			using.require.stub('deep-equal', function(){
+				//always return false
+				return false;
+			});
+			var deepEqual = using.require('deep-equal');
+			//add a method that actually doesn't exist
+			using(deepEqual)('usingStubsTest').expect(1, deepEqual.usingStubsTest(), function(){});
+			//require external test
+			require('./requires/test-include-deepEqual-overriden.js');
+			//verify
+			using.verify();
+			//restore
+			using.restore();
+			//back to normal
+			require('./requires/test-include-deepEqual-default.js');
+		});
+
 	});
 
 	describe('classes and instances', function(){

@@ -9,12 +9,13 @@ Enables you to validate and override behaviour of nested pieces of code such as 
 This library is inspired on [node-gently](https://github.com/alex-seville/blanket), [MockJS](https://github.com/badoo/MockJS) and [mock-require](https://github.com/boblauer/mock-require).
 
 ---
+---
 ##API
 
 ### <a name="gettingStarted"></a>Getting started
 
 ```JavaScript
-var using = require('using')(); //an instance of using
+var using = require('using-stubs')(); //an instance of using
 ```
 
 
@@ -111,6 +112,8 @@ _using(object)('method').restore();_
 using(foo)('bar').restore();
 ```
 
+---
+
 ### <a name="requireMethods"></a>require() module methods
 _var module = using.require(moduleName);_
 
@@ -157,6 +160,7 @@ _using.require.restore(moduleName);_
 using.require.restore('module');
 ```
 
+---
 
 ### <a name="classes"></a>classes and instances
 _var instance = using(ClassModule).instance([countMatch], new ClassModule([[paramMatchers](#paramMatchers)...]), [stubInstance]);_
@@ -204,6 +208,7 @@ using(object)('method').fail();
 using(foo)('bar').expect(0, foo.bar(using.everything));
 ```
 
+---
 
 ###matchers
 
