@@ -3,7 +3,7 @@ var assert = require('assert');
 var usingFactory, using;
 
 //blanket to test nature.js file coverage
-if(process.env.YOURPACKAGE_COVERAGE) require('blanket')({"data-cover-only":'src'});
+if(process.env.YOURPACKAGE_COVERAGE) require('blanket')({"data-cover-only":'src', "data-cover-never":'node_modules'});
 
 describe('using-stubs', function(){
 
