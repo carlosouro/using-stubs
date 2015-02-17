@@ -9,7 +9,6 @@ Enables you to validate and override behaviour of nested pieces of code such as 
 This library is inspired on [node-gently](https://github.com/alex-seville/blanket), [MockJS](https://github.com/badoo/MockJS) and [mock-require](https://github.com/boblauer/mock-require).
 
 ---
----
 ##API
 
 ### <a name="gettingStarted"></a>Getting started
@@ -125,6 +124,7 @@ using(foo)('bar').expect(0, foo.bar(using.everything));
 ```
 
 ---
+## <a name="require"></a>require()
 ---
 
 ### <a name="requireMethods"></a>require() module methods
@@ -217,9 +217,8 @@ using(cat)('pet').expect(
 ```
 
 ---
+## <a name="matchers"></a>matchers
 ---
-
-###matchers
 
 #### <a name="paramMatchers"></a>parameter matchers
 
