@@ -112,6 +112,19 @@ _using(object)('method').restore();_
 using(foo)('bar').restore();
 ```
 
+### <a name="fail"></a>verify a method is never called
+_using(object)('method').fail();_
+
+Expects this method never to be called.
+
+Simplified alias of expecting 0 times matching everything:
+```JavaScript
+using(object)('method').fail();
+//simplified alias for:
+using(foo)('bar').expect(0, foo.bar(using.everything));
+```
+
+---
 ---
 
 ### <a name="requireMethods"></a>require() module methods
@@ -132,10 +145,16 @@ using(uProcess)('exec').expect(
 ```
 require
 
-####restore module methods
+####restore module method
 
 ```JavaScript
-uProcess('exec').restore();
+using(uProcess)('exec').restore();
+```
+
+####restore all module methods
+
+```JavaScript
+using(uProcess).restore();
 ```
 
 
@@ -153,13 +172,14 @@ var module = using.require('module');
 using(module)('foo').expect(module.foo(/*...*/), /*...*/);
 ```
 
-####restore normal module
+####restore normal module (clear stubs)
 _using.require.restore(moduleName);_
-
+<sub>Note: also restores all module methods</sub>
 ```JavaScript
 using.require.restore('module');
 ```
 
+---
 ---
 
 ### <a name="classes"></a>classes and instances
@@ -196,18 +216,7 @@ using(cat)('pet').expect(
 );
 ```
 
-### <a name="fail"></a>never run a method
-_using(object)('method').fail();_
-
-Expects this method never to be called.
-
-Simplified alias of expecting 0 times matching everything:
-```JavaScript
-using(object)('method').fail();
-//simplified alias for:
-using(foo)('bar').expect(0, foo.bar(using.everything));
-```
-
+---
 ---
 
 ###matchers
@@ -254,15 +263,17 @@ using.aNumber            //matches any number
 using.anObject           //matches any object (not null)
 using.aFunction          //matches any function
 using.typeOf(type)       //tests typeOf(parameter)===type
-using.instanceOf(Class)  //tests instanceOf(parameter)===Class
-using.something          //matches !==undefined
-using.anything           //matches any param as long as it is set (even undefined)
+using.instanceOf(Class)  //tests parameter instanceOf Class
+using.something          //matches parameter!==undefined
+using.anything           //matches any param as long as it is set in the argument list (even undefined)
 
 using.anObjectLike(obj, [boolean strict])  //deep compare to given object
                          //strict - defaults to non-strict (==) comparison (false)
 
-using.everything         //special matcher - all arguments from this point onward will be matched, even if none is set
-                         //eg. foo("a", Match.everything) will match foo("a"), foo("a", "one"), foo("a", 1, 2, 3, 4, 5, 6);
+using.everything         //special matcher - all arguments from this point onward
+                         //will be matched, even if not set in the argument list.
+                         //Eg. foo("a", Match.everything) will match foo("a"), foo("a", "one")
+                         //or even foo("a", 1, 2, 3, 4, 5, 6);
 ```
 
 
