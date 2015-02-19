@@ -243,13 +243,13 @@ describe('using-stubs', function(){
 	describe('require', function(){
 
 		it('should return a reference function on .require()', function(){
-			var obj = using.require('./requires/include.js');
+			var obj = using.require('./includes/require/include.js');
 			assert(typeof obj === 'function', 'is a function');
 			assert(Object.keys(obj).length===0, 'it is empty');
 		})
 
 		it('should allow us to set expectations', function(){
-			var obj = using.require('./requires/include.js');
+			var obj = using.require('./includes/require/include.js');
 
 			using(obj)('test').expect(1, obj.test());
 			using(obj)('testTrue').expect(1, obj.testTrue("hello"));
@@ -257,7 +257,7 @@ describe('using-stubs', function(){
 				return true;
 			});
 			//require external test
-			require('./requires/test-include-overriden.js');
+			require('./includes/require/test-include-overriden.js');
 		});
 
 		it('should verify set expectations', function(){
@@ -266,31 +266,31 @@ describe('using-stubs', function(){
 		})
 
 		it('should using.require.restore(module)', function(){
-			using.require.restore('./requires/include.js');
+			using.require.restore('./includes/require/include.js');
 			//require external test
-			require('./requires/folder/test-include-default.js');
+			require('./includes/require/subfolder/test-include-default.js');
 			//verify
 			using.verify();
 		});
 
 		it('should allow stubbing', function(){
 			//some expectation before
-			var obj = using.require('./requires/include.js');
+			var obj = using.require('./includes/require/include.js');
 			using(obj)('test').expect(1, obj.test());
 			//a stub
-			using.require.stub('./requires/include.js', {
+			using.require.stub('./includes/require/include.js', {
 				testTrue:function(){return false},
 				testFalse:function(){return true}
 			});
 			//some more expectations after
-			obj = using.require('./requires/include.js');
+			obj = using.require('./includes/require/include.js');
 			using(obj)('testTrue').expect(1, obj.testTrue(using.everything), function(){
 				return true;
 			});
 			using(obj)('testFalse').expect(1, obj.testFalse());
 
 			//require external test
-			require('./requires/test-include-overriden2.js');
+			require('./includes/require/test-include-overriden2.js');
 			//verify
 			using.verify();
 		});
@@ -298,7 +298,7 @@ describe('using-stubs', function(){
 		it('should restore also stubs using.restore()', function(){
 			using.restore();
 			//require external test
-			require('./requires/folder/test-include-default2.js');
+			require('./includes/require/subfolder/test-include-default2.js');
 			//verify
 			using.verify();
 		});
@@ -312,13 +312,13 @@ describe('using-stubs', function(){
 			//add a method that actually doesn't exist
 			using(deepEqual)('usingStubsTest').expect(1, deepEqual.usingStubsTest(), function(){});
 			//require external test
-			require('./requires/test-include-deepEqual-overriden.js');
+			require('./includes/require/deepEqual/test-include-deepEqual-overriden.js');
 			//verify
 			using.verify();
 			//restore
 			using.restore();
 			//back to normal
-			require('./requires/test-include-deepEqual-default.js');
+			require('./includes/require/deepEqual/test-include-deepEqual-default.js');
 		});
 
 	});
@@ -326,7 +326,7 @@ describe('using-stubs', function(){
 	describe('classes and instances', function(){
 		it('should override class instance', function(){
 
-			var Cat = using.require('./requires/folder/Cat.js');
+			var Cat = using.require('./includes/classes/subfolder/Cat.js');
 
 			//override Class
 			var StubClass = function(){
@@ -357,7 +357,7 @@ describe('using-stubs', function(){
 
 
 			//run our tests
-			require('./requires/test-class-overriden');
+			require('./includes/classes/test-class-overriden');
 
 			//verify all
 			using.verify();
@@ -365,7 +365,7 @@ describe('using-stubs', function(){
 
 		it('should restore any later use of class, even if already loaded', function(){
 			//before restore, load the Cat class
-			var runner = require('./requires/test-class-default-preloaded.js');
+			var runner = require('./includes/classes/test-class-default-preloaded.js');
 
 			//restore class
 			using.restore();
@@ -379,7 +379,7 @@ describe('using-stubs', function(){
 
 		it('any further require of class works as default', function(){
 			//before restore, load the Cat class
-			require('./requires/test-class-default.js');
+			require('./includes/classes/test-class-default.js');
 		})
 	})
 

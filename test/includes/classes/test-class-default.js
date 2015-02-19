@@ -1,4 +1,4 @@
-var Cat = require('./folder/Cat');
+var Cat = require('./subfolder/Cat');
 
 var furrball = new Cat("Furrball");
 
