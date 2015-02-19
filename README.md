@@ -158,7 +158,6 @@ using(uProcess)('exec').expect(
 	}
 );
 ```
-require
 
 ####restore module method
 
@@ -189,6 +188,7 @@ using(module)('foo').expect(module.foo(/*...*/), /*...*/);
 
 ####restore normal module (clear stubs)
 _using.require.restore(moduleName);_
+
 <sub>Note: also restores all module methods</sub>
 ```JavaScript
 using.require.restore('module');
