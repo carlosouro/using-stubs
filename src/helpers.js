@@ -40,12 +40,18 @@ module.exports.expectParams = function(indentifier, c, m,s, allowIdentifierOnly)
 
 	var ret = {};
 
+	//expect(pattern, [stub])
 	if(c===indentifier){
+		ret.countsMatcher = globals.MATCH_ALL_COUNTS;
+
+		//expect(pattern, stub)
 		if(typeof m === 'function'){
 			ret.stub = m;
 		} else if(typeof m !== 'undefined'){
 			if(!allowIdentifierOnly) throw new Error("using-stubs: .expect() called with unexpected set of arguments")
 		}
+
+	//expect(countMatcher, pattern, stub)
 	} else if(m===indentifier){
 		ret.countsMatcher = c;
 		if(typeof s === 'function'){
@@ -53,9 +59,53 @@ module.exports.expectParams = function(indentifier, c, m,s, allowIdentifierOnly)
 		} else if(typeof s !== 'undefined'){
 			throw new Error("using-stubs: .expect() called with unexpected set of arguments")
 		}
+
+	//expect(countMatcher, [stub])
+	} else if(typeof s === 'undefined') {
+
+		ret.countsMatcher = c;
+		ret.noPattern = true;
+
+		//expect(countMatcher, stub)
+		if(typeof m === 'function'){
+			ret.stub = m;
+		} else if(typeof m !== 'undefined'){
+			throw new Error("using-stubs: .expect() called with unexpected set of arguments")
+		}
+
+	//error
 	} else {
 		throw new Error("using-stubs: .expect() called with unexpected set of arguments")
 	}
 
 	return ret;
+}
+
+
+module.exports.describeItem = function(item, acceptUndefined){
+	var desc = '';
+	if(typeof item !== 'undefined' && item !== globals.MATCH_ALL_COUNTS){
+		if(typeof item === 'function'){
+  		if(item['using:explanation']){
+  			desc = item['using:explanation'];
+  		} else {
+  			desc = '[function]';
+  		}
+  	} else if(typeof item === 'object'){
+  		if(item['using:explanation']){
+  			desc = item['using:explanation'];
+  		} else {
+  			desc = '[object]';
+  		}
+  	} else {
+  		desc = ''+item;
+  	}
+
+  	desc = desc;
+
+	} else if(acceptUndefined){
+		desc = 'undefined';
+	}
+
+	return desc;
 }

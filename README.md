@@ -19,7 +19,9 @@ var using = require('using-stubs')(); //an instance of using
 
 
 ### <a name="methods"></a>methods stubbing and verification
-_using(object)('method').expect([countMatch], object.method([[paramMatchers](#paramMatchers)...]), [stubFn]);_
+_using(object, [objectName])('method').expect([countMatch], [object.method([[paramMatchers](#paramMatchers)...])], [stubFn]);_
+_using(object, [objectName])('method').stub([object.method([[paramMatchers](#paramMatchers)...])], stubFn);_
+_using(object, [objectName])('method').fail([object.method([[paramMatchers](#paramMatchers)...])]);_
 
 **Consider the object:**
 ```JavaScript
@@ -30,22 +32,36 @@ var foo = {
 }
 ```
 
-**Setup: Just stubbing:**
+**Setup: Simple stubbing:**
+```JavaScript
+using(foo)('bar').stub(
+	function(someone){	//stub
+		return someone+" went to the park instead";
+	}
+);
+```
+
+**Setup: Simple failing:**
+```JavaScript
+using(foo)('baz').fail();
+```
+
+**Setup: Matching --&gt; Stubbing:**
 ```JavaScript
 using(foo)('bar').expect(
 	foo.bar(using.aString),	//call match clause
-	function(someone){	//stub
+	function(someone){	//stub for this case
 		return someone+" stayed at home";
 	}
 );
 ```
 
-**Setup: Just verification:**
+**Setup: Verification &lt;-- Matching:**
 ```JavaScript
 using(foo)('bar').expect(1, foo.bar("John"));
 ```
 
-**Setup: Stubbing + verification + context:**
+**Setup: Verification &lt;-- Matching (w/ context example) --&gt; Stubbing:**
 ```JavaScript
 var someScope = {};
 
@@ -58,14 +74,22 @@ using(foo)('bar').expect(
 );
 ```
 
+**Setup: Just Verification:**
+```JavaScript
+using(foo)('bar').expect(4); //any context, any arguments
+```
+
 **Running the test**
 ```JavaScript
 foo.bar("Peter"); //Peter stayed at home
 foo.bar("John"); //John stayed at home (*)
 foo.bar.call(someScope, "Anna"); //Anna was the only one going to the bar
+foo.bar(5); //5 went to the park instead
+//foo.baz(); //this would fail our test
 
 //* note that we did not stub John specifically
-//therefore he matches both the verification but also the using.aString stub
+//therefore he matches both the "John" verification but also the using.aString stub
+//matching "stops" once a stub is matched in the internal validation queue
 ```
 
 ### <a name="verify"></a>verify all expectations
@@ -111,21 +135,9 @@ _using(object)('method').restore();_
 using(foo)('bar').restore();
 ```
 
-### <a name="fail"></a>verify a method is never called
-_using(object)('method').fail();_
-
-Expects this method never to be called.
-
-Simplified alias of expecting 0 times matching everything:
-```JavaScript
-using(object)('method').fail();
-//simplified alias for:
-using(foo)('bar').expect(0, foo.bar(using.everything));
-```
-
+---
 ---
 ## <a name="require"></a>require()
----
 
 ### <a name="requireMethods"></a>require() module methods
 _var module = using.require(moduleName);_
@@ -217,8 +229,8 @@ using(cat)('pet').expect(
 ```
 
 ---
-## <a name="matchers"></a>matchers
 ---
+## <a name="matchers"></a>matchers
 
 #### <a name="paramMatchers"></a>parameter matchers
 

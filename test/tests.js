@@ -213,6 +213,34 @@ describe('using-stubs', function(){
 			using.restore();
 		})
 
+		it('should allow for expect(counter, stub) syntax', function(){
+			var passed = false;
+			using(obj)('test').expect(1, function(){
+				passed = true;
+			});
+
+			obj.test();
+
+			assert(passed, 'executes stub') //Peter stayed at home
+
+			using.verify();
+			using.restore();
+		});
+
+		it('should allow for expect(counter) syntax', function(){
+			var foo = {
+				test: function(){}
+			}
+			using(foo)('test').expect(3);
+
+			foo.test();
+			foo.test();
+			foo.test();
+
+			using.verify();
+			using.restore();
+		});
+
 		//it('should reset counters on using(foo)(bar).reset()');
 
 		//it('should reset counters on using(foo).reset()');

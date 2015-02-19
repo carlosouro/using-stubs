@@ -14,9 +14,9 @@ var UsingWrapper = require('./UsingWrapper');
 module.exports = globals.pack.from(UsingWrapper).factory(function(pub, prot, unfold){
 
 	//what running the factory method does (required)
-  prot.scope = function(obj){
+  prot.scope = function(obj, name){
   	var obj = objectStack(obj).getObjHook(pub);
-  	unfold(obj).prepare();
+  	unfold(obj).prepare(name || '[object]');
   	return obj;
 	}
 	prot.createObjectHook = function(obj){

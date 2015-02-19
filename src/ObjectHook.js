@@ -15,14 +15,15 @@ module.exports = globals.pack.factory(function(pub, prot, unfold){
 	}
 
 	prot.scope = function(prop){
-		return new PropertyHook(prot.obj.reference, prop, prot.using);
+		return new PropertyHook(prot.obj.reference, prop, prot.using, prot.name);
 	}
 
 	pub.restore = function(){
 		prot.obj.remove(prot.using);
 	}
 
-	prot.prepare = function(){
+	prot.prepare = function(name){
+		prot.name = name;
 		prot.reqObject = requireStack.byRef(prot.obj.reference);
 	}
 
