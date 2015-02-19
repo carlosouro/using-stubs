@@ -20,8 +20,13 @@ var using = require('using-stubs')(); //an instance of using
 
 ### <a name="methods"></a>methods stubbing and verification
 _using(object, [objectName])('method').expect([countMatch], [object.method([[paramMatchers](#paramMatchers)...])], [stubFn]);_
+
+
 _using(object, [objectName])('method').stub([object.method([[paramMatchers](#paramMatchers)...])], stubFn);_
+
+
 _using(object, [objectName])('method').fail([object.method([[paramMatchers](#paramMatchers)...])]);_
+
 
 **Consider the object:**
 ```JavaScript
