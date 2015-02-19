@@ -384,7 +384,17 @@ describe('using-stubs', function(){
 	})
 
 	describe('matchers', function(){
-		//TO-DO
+		//everything
+		it('should match using.everything', function(){
+			var foo = {};
+
+			using(foo)('bar').expect(1, function(){});
+
+			foo.bar(1,2,3,4,5,6,7);
+
+			using.verify();
+			using.restore();
+		})
 	})
 
 });

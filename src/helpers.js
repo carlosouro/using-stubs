@@ -22,7 +22,12 @@ module.exports.argsMatcher = function(args, matchers){
 	//size matches - now let's test each of the matchers
 	var i;
 	for(i=0; i<args.length; i++){
-		if( typeof matchers[i] !== 'function' ? globals.EVERYTHING_MATCHER!==matchers[i] && args[i]!==matchers[i] : !matchers[i](args[i]) ){
+
+		//in case an everything is reached - accept match
+		if(globals.EVERYTHING_MATCHER===matchers[i]) break;
+
+		//compare/test
+		if( typeof matchers[i] !== 'function' ? args[i]!==matchers[i] : !matchers[i](args[i]) ){
 			return false;
 		}
 	}
