@@ -287,7 +287,7 @@ using.anObjectLike(obj, [boolean strict])  //deep compare to given object
 
 using.everything         //special matcher - all arguments from this point onward
                          //will be matched, even if not set in the argument list.
-                         //Eg. foo("a", Match.everything) will match foo("a"), foo("a", "one")
+                         //Eg. foo("a", using.everything) will match foo("a"), foo("a", "one")
                          //or even foo("a", 1, 2, 3, 4, 5, 6);
 ```
 
