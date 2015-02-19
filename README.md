@@ -32,7 +32,7 @@ var foo = {
 }
 ```
 
-**Setup: Simple stubbing:**
+**Setup: Simple stubbing all method calls:**
 ```JavaScript
 using(foo)('bar').stub(
 	function(someone){	//stub
@@ -41,7 +41,7 @@ using(foo)('bar').stub(
 );
 ```
 
-**Setup: Simple failing:**
+**Setup: Simple failing any method calls:**
 ```JavaScript
 using(foo)('baz').fail();
 ```
@@ -58,7 +58,7 @@ using(foo)('bar').expect(
 
 **Setup: Verification &lt;-- Matching:**
 ```JavaScript
-using(foo)('bar').expect(1, foo.bar("John"));
+using(foo)('bar').expect(1, foo.bar("John")); //expect foo.bar("John") to be called once
 ```
 
 **Setup: Verification &lt;-- Matching (w/ context example) --&gt; Stubbing:**
@@ -76,21 +76,19 @@ using(foo)('bar').expect(
 
 **Setup: Just Verification:**
 ```JavaScript
-using(foo)('bar').expect(4); //any context, any arguments
+using(foo)('bar').expect(4); //in total, foo.bar will be used 4 times
 ```
 
 **Running the test**
 ```JavaScript
 foo.bar("Peter"); //Peter stayed at home
-foo.bar("John"); //John stayed at home (*)
+foo.bar("John"); //John stayed at home
 foo.bar.call(someScope, "Anna"); //Anna was the only one going to the bar
 foo.bar(5); //5 went to the park instead
-//foo.baz(); //this would fail our test
-
-//* note that we did not stub John specifically
-//therefore he matches both the "John" verification but also the using.aString stub
-//matching "stops" once a stub is matched in the internal validation queue
+//foo.baz(); //doing this would fail our test
 ```
+
+<sub>Note: verifications are processed from newest to oldest and whenever a stub is hit, the processing stops. This means that if we'd begun with the simple _using(foo)('bar').expect(4);_ on the top instead of at the bottom, cases that would hit a stub in the queue wouldn't count as a match for _.expect(4)_, and _.verify()_ would fail.</sub>
 
 ### <a name="verify"></a>verify all expectations
 _using.verify([errorMsg]);_
