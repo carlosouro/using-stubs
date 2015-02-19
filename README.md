@@ -33,7 +33,8 @@ _using(object, [objectName])('method').fail([object.method([[paramMatchers](#par
 var foo = {
 	bar: function(someone){
 		return someone+" goes into a bar";
-	}
+	},
+	baz: function(){}
 }
 ```
 
