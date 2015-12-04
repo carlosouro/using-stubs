@@ -282,6 +282,9 @@ using.instanceOf(Class)  //tests parameter instanceOf Class
 using.something          //matches parameter!==undefined
 using.anything           //matches any param as long as it is set in the argument list (even undefined)
 
+using.oneOf(a1, [[a2], ...[aN]])     //matches one of the given parameters
+using.otherThan(a1, [[a2], ...[aN]]) //matches none of the given parameters
+
 using.anObjectLike(obj, [boolean strict])  //deep compare to given object
                          //strict - defaults to non-strict (==) comparison (false)
 

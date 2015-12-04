@@ -74,6 +74,24 @@ module.exports = globals.pack.factory(function(pub, prot){
   pub.anything = function(){return true;}
   pub.anything['using:explanation'] = 'using.anything';
 
+  pub.oneOf = function(){
+  	var args = Array.prototype.slice(arguments);
+  	function oneOf(item){
+  		return args.indexOf(item)!==-1;
+  	}
+  	oneOf['using:explanation'] = 'using.oneOf('+JSON.stringify(args).replace(/^\[|\]$/g, '')+')';
+  	return oneOf;
+  }
+
+  pub.otherThan = function(){
+  	var args = Array.prototype.slice.call(arguments);
+  	function otherThan(item){
+  		return args.indexOf(item)===-1;
+  	}
+  	otherThan['using:explanation'] = 'using.otherThan('+JSON.stringify(args).replace(/^\[|\]$/g, '')+')';
+  	return otherThan;
+  }
+
 
   //COUNT MATCHERS
   pub.atLeast = function(i){
