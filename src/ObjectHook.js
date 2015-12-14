@@ -30,7 +30,7 @@ module.exports = globals.pack.factory(function(pub, prot, unfold){
 	pub.instance = function(c, m, s){
 
 		if(!prot.reqObject){
-			throw new Error("using-stubs: Class instance overrides only works for using.require(ClassMosule)");
+			throw new Error("using-stubs: Class instance overrides only works for using.require(ClassModule)");
 		}
 
 		var ref = prot.reqObject.temporaryInstanceHook.reference;
@@ -42,6 +42,22 @@ module.exports = globals.pack.factory(function(pub, prot, unfold){
 
 		return ref;
 	}
+
+  pub.factory = function(c, m, s){
+
+    if(!prot.reqObject){
+      throw new Error("using-stubs: Factory overrides only works for using.require(FactoryModule)");
+    }
+
+    var ref = prot.reqObject.temporaryFactoryHook.reference;
+
+    //get expect params
+    var opts = helpers.expectParams(ref, c, m, s, true);
+    //tell req to accept new factory under this owner
+    prot.reqObject.saveFactory(prot.using, opts);
+
+    return ref;
+  }
 
 	//verify everything
   prot.verify = function(msg){

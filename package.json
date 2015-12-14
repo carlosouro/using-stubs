@@ -1,7 +1,7 @@
 {
   "name": "using-stubs",
   "description": "Stubbing and verification for node.js tests. Validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "homepage": "",
   "author": {
     "name": "Carlos Ouro",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Odobo/using-stubs.git"
+    "url": "https://github.com/carlosouro/using-stubs.git"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test/tests.js --reporter dot",
