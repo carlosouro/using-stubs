@@ -1,7 +1,7 @@
 #using-stubs
 ![using-stubs NPM package information](https://nodei.co/npm/using-stubs.png "using-stubs NPM package information")
 
-![using-stubs travis-CI build](https://travis-ci.org/carlosouro/using-stubs.svg "using-stubs travis-CI build") ![using-stubs test coverage](https://coveralls.io/repos/carlosouro/using-stubs/badge.svg "using-stubs test coverage")
+![using-stubs travis-CI build](https://travis-ci.org/carlosouro/using-stubs.svg "using-stubs travis-CI build") ![using-stubs test coverage](https://coveralls.io/repos/github/carlosouro/using-stubs/badge.svg?branch=master "using-stubs test coverage")
 
 Stubbing and verification for node.js tests.
 Enables you to validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.
