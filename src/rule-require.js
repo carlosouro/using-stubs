@@ -23,7 +23,7 @@ module.exports = global.usingPackage.from(ruleBase).factory(function(pub, prot, 
       path = require.resolve(module);
     } catch(e) {
       path = join(dirname(calledFrom), module);
-      path = Module._resolveFilename(module);
+      path = Module._resolveFilename(path);
     }
 
     prot.identifiers = {

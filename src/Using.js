@@ -66,7 +66,9 @@ module.exports = global.usingPackage.from(Matchers).factory(function(pub, prot, 
 
   //using.require()
   pub.require = function(module){
-    return requireRuleFactory(pub, module, callerId.getData().filePath)
+    var rule = requireRuleFactory(pub, module, callerId.getData().filePath);
+    prot.rules.push(rule);
+    return rule;
   }
 
   //destroy all existing rules and object links

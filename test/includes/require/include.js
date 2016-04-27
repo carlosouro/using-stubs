@@ -4,5 +4,10 @@ module.exports = {
 	},
 	testFalse:function(){
 		return false;
-	}
+	},
+  getObject:function(){
+    return {
+      value:true
+    }
+  }
 }

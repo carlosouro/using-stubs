@@ -160,6 +160,29 @@ describe('using-stubs', function(){
 
     });
 
+    it('should follow code (require)', function(done){
+
+      using.require('./includes/require/include.js').follow(function(obj){
+        follows++
+        assert(obj.testTrue() && !obj.testFalse());
+        return using(obj, 'getObject');
+      }).follow(function(obj){
+        follows++;
+        assert(obj.value)
+        obj.value = false;
+      })
+
+      assert(!require('./includes/require/include.js').getObject().value)
+      assert.equal(follows, 2);
+
+      using.clean();
+      assert(require('./includes/require/include.js').getObject().value)
+      assert.equal(follows, 2);
+
+      done();
+
+    });
+
   });
 
   //TO-DO: missing require() tests
