@@ -1,7 +1,7 @@
 {
   "name": "using-stubs",
-  "description": "Stubbing and verification for node.js tests. Validate and override behaviour of nested pieces of code such as methods, require() and npm modules or even instances of classes.",
-  "version": "0.0.7",
+  "description": "Deep code stubbing for node.js tests. Follow and override behaviour of infinitely nested pieces of code such as methods, require() and npm modules or even instances of classes, etc.",
+  "version": "2.0.0",
   "homepage": "",
   "author": {
     "name": "Carlos Ouro",
@@ -24,7 +24,7 @@
     "mocha-lcov-reporter": "0.0.1"
   },
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "src/using.js",
   "engines": {
     "node": ">= 0.10"
   },
@@ -38,7 +38,8 @@
     "mock require"
   ],
   "dependencies": {
-    "nature-js": "^0.5.0",
+    "stalker-pattern": "^0.0.1",
+    "nature-js": "^0.5.3",
     "caller-id": "^0.1.0",
     "deep-equal": "^0.2.1"
   }
