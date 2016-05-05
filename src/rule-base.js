@@ -112,7 +112,7 @@ module.exports = global.usingPackage.create(function(pub, prot, unfold){
 
       //property classes
       //if this property is instanced as a class we actually return this instead of ret
-      if(this instanceof prot.exec || this.constructor["nature:isFactory"]){
+      if(this instanceof prot.exec || this["using:wrapper:instance"]===functionFactory.check){
         ret = this;
       }
 

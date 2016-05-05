@@ -113,6 +113,32 @@ describe('using-stubs', function(){
 
     });
 
+    it('should .clean() all rules for a given property', function(done){
+
+      using(obj, 'prop').follow(function(objInside){
+
+        using(objInside, 'getClassExample').stub(function(){
+          return false;
+        })
+
+        using(objInside, 'propInside').stub(function(){
+          return false;
+        })
+
+      });
+
+      var a = obj.prop();
+      assert(!a.getClassExample() && !a.propInside())
+
+      using(a, 'getClassExample').clean();
+      assert(!!a.getClassExample() && !a.propInside())
+      using.clean();
+
+
+      done();
+
+    });
+
     it('should work for multiple rules', function(done){
 
       //rule 1 (matches last)
@@ -237,6 +263,32 @@ describe('using-stubs', function(){
 
     });
 
+    it('should follow code (property classes w/ like())', function(done){
+
+      using.clean()
+
+      using(obj, 'prop').follow(function(objInside){
+        follows++;
+        assert(objInside.propInside && objInside.ClassExample);
+        return using(objInside, 'ClassExample').like(new objInside.ClassExample("test"));
+      }).follow(function(instanceInside){
+        follows++;
+        assert(instanceInside.propInClass);
+        return using(instanceInside, 'propInClass');
+      }).follow(function(objInside2){
+        follows++;
+        objInside2.value = "propInClass-value-modified";
+      });
+
+      assert.equal((new (obj.prop()).ClassExample()).propInClass().value, "propInClass-value")
+      assert.equal((new (obj.prop()).ClassExample("test")).propInClass().value, "propInClass-value-modified")
+
+      assert.equal(follows, 4);
+
+      done();
+
+    });
+
     it('should follow code (piped function/class)', function(done){
 
       using.clean()
@@ -260,6 +312,35 @@ describe('using-stubs', function(){
       assert.equal((new (obj.prop().getClassExample())()).propInClass().value, "propInClass-value-modified")
 
       assert.equal(follows, 4);
+
+      done();
+
+    });
+
+    it('should follow code (piped function/class w/ like() modifier)', function(done){
+
+      using.clean()
+
+      using(obj, 'prop').follow(function(objInside){
+        follows++;
+        assert(objInside.propInside && objInside.ClassExample);
+        return using(objInside, 'getClassExample');
+      }).follow(function(ClassExample){
+        follows++;
+        assert(typeof ClassExample, 'function');
+        return using(ClassExample).like(new ClassExample("test"));
+      }).follow(function(objInside2){
+        follows++;
+        return using(objInside2, 'propInClass');
+      }).follow(function(objInside3){
+        follows++;
+        objInside3.value = "propInClass-value-modified";
+      });
+
+      assert.equal((new (obj.prop().getClassExample())()).propInClass().value, "propInClass-value")
+      assert.equal((new (obj.prop().getClassExample())("test")).propInClass().value, "propInClass-value-modified")
+
+      assert.equal(follows, 6);
 
       done();
 

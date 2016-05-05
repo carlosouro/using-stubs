@@ -29,7 +29,7 @@ module.exports = global.usingPackage.from(ruleBase).factory(function(pub, prot, 
 
       //replace obj() call with matchersGatherer
       var currentFn = prot.objProt.exec;
-      prot.objProt.exec = matchersGatherer({});
+      prot.objProt.exec = prot.matchersGatherer({});
 
       //setup the finish callback
       return function(matcher){

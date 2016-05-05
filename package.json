@@ -39,7 +39,7 @@
   ],
   "dependencies": {
     "stalker-pattern": "^0.1.0",
-    "nature-js": "^0.5.3",
+    "nature-js": "^0.5.4",
     "caller-id": "^0.1.0",
     "deep-equal": "^0.2.1"
   }

@@ -13,6 +13,8 @@ var functionFactory = global.usingPackage.factory(function(pub,prot){
     Object.defineProperty(pub, "using:wrapper:check", { writable: false, configurable: false, enumerable:false, value: functionFactory.check });
     //inherit from original prototype
     prot.scope.prototype = Object.create(originalFn.prototype);
+
+    Object.defineProperty(prot.scope.prototype, "using:wrapper:instance", { writable: false, configurable: false, enumerable:false, value: functionFactory.check });
   }
 
   prot.scope = function(){
