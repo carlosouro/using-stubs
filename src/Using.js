@@ -21,13 +21,19 @@ module.exports = global.usingPackage.from(Matchers).factory(function(pub, prot, 
   //active rules
   prot.rules = [];
 
+  //debug
+  pub.debug = false;
+
+  pub.logger = function(){
+    console.log.apply(console, arguments);
+  }
+
   //using(obj, prop)
   prot.scope = function(){
 
     var obj, prop, isFunction=false;
 
     //validation
-    //console.log(arguments)
     switch(arguments.length){
       // using(fn)
       case 1:

@@ -3,6 +3,7 @@ var Stalker = require('stalker-pattern');
 
 //internal
 var Matchers = require('./Matchers');
+var formatter = require('./formatter');
 var functionFactory = require('./function-wrapper');
 
 //instance of matcher for internal use
@@ -15,12 +16,23 @@ module.exports = global.usingPackage.create(function(pub, prot, unfold){
   prot.contextMatcher = matchers.anything;
   prot.argumentMatchers = [matchers.everything];
 
+  //matcher references
   prot.matchers = matchers;
+  //method replacement for obj.prop() or obj() for matching setup
+  prot.matchersGatherer = formatter;
+
+  //random ID
+  prot.id = '('+(0|Math.random()*9e6).toString(36)+')';
 
   //prot.construct()
   prot.construct = function(using){
 
     prot.using = using;
+
+    //integrate Stalker pattern
+    Object.keys(Stalker.prototype).forEach(function(k){
+      pub[k]=Stalker.prototype[k];
+    })
 
     Stalker.call(pub, function(t){
       //link trigger
@@ -29,16 +41,6 @@ module.exports = global.usingPackage.create(function(pub, prot, unfold){
 
     prot.initialise.apply(prot, Array.prototype.slice.call(arguments, 1));
   }
-
-  //method replacement for obj.prop() or obj() for matching setup
-  prot.matchersGatherer = function(){
-    return {
-      context:this instanceof prot.matchersGatherer ? matchers.newInstance : this,
-      args:[].slice(arguments)
-    }
-  }
-
-
 
   //method execution
   prot.exec = function(){
@@ -95,6 +97,11 @@ module.exports = global.usingPackage.create(function(pub, prot, unfold){
     //match / no match logic
     if(match) {
 
+      //debug
+      if(prot.using.debug){
+        prot.using.logger("using matched", prot.describe(), prot.id)
+      }
+
       //execute stub
       if(prot.stub){
         ret = prot.stub(prot.previousFn, arguments, this)
@@ -121,6 +128,11 @@ module.exports = global.usingPackage.create(function(pub, prot, unfold){
       return ret;
 
     } else {
+
+      //debug
+      if(prot.using.debug){
+        prot.using.logger("using skipped", prot.describe(), prot.id)
+      }
 
       //pipe normal flow directly
       return prot.previousFn.apply(this, arguments);
@@ -168,12 +180,28 @@ module.exports = global.usingPackage.create(function(pub, prot, unfold){
     prot.argumentMatchers = [];
   }
 
+  //internal debug
+  prot.describeItem = function(item){
+    if(item && item['using:explanation']){
+      return item['using:explanation']
+    } else if(typeof item === 'function'){
+      return '[function]';
+    } else if(item && typeof item === 'object'){
+      return '[object]';
+    } else if(typeof item === 'string'){
+      return '"'+item+'"';
+    } else {
+      return ""+item;
+    }
+  }
+
 
   //to be implemented in child classes:
   //prot.identifiers
   //prot.previousFn
   //prot.initialise()
   //prot.destroyHook()
+  //prot.describe() - debug
   //pub.like() - optional
 
 });

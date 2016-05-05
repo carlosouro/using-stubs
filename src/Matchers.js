@@ -1,18 +1,22 @@
 //external
 var deepEqual = require('deep-equal');
 
+var MATCH_EVERYTHING = {
+  'using:explanation': 'using.everything'
+}
+var MATCH_NEW_INSTANCE = {
+  'using:explanation': 'using.newInstance'
+}
+
+
 //Class definition
-module.exports = global.usingPackage.create(function(pub,prot){
+var Matchers = global.usingPackage.create(function(pub,prot){
 
   //SPECIAL MATCHERS
   //everything matcher reference
-  pub.everything = {
-    'using:explanation': 'using.everything'
-  }
-  //everything matcher reference
-  pub.newInstance = {
-    'using:explanation': 'using.newInstance'
-  }
+  pub.everything = MATCH_EVERYTHING;
+  //newInstance matcher reference
+  pub.newInstance = MATCH_NEW_INSTANCE;
 
   //PARAMETER MATCHERS
   pub.typeOf = function(type, customDescription){
@@ -110,3 +114,16 @@ module.exports = global.usingPackage.create(function(pub,prot){
     return between;
   }
 });
+
+Matchers.sameContext = function(context){
+  var matchSameContext = function(c){
+    return c==context;
+  }
+
+  matchSameContext['using:explanation'] = '[original context]';
+  matchSameContext['using:sameContext'] = true;
+
+  return matchSameContext;
+}
+
+module.exports = Matchers;

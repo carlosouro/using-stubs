@@ -38,7 +38,7 @@
     "mock require"
   ],
   "dependencies": {
-    "stalker-pattern": "^0.0.1",
+    "stalker-pattern": "^0.1.0",
     "nature-js": "^0.5.3",
     "caller-id": "^0.1.0",
     "deep-equal": "^0.2.1"

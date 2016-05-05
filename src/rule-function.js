@@ -1,5 +1,6 @@
 //internal
 var ruleBase = require('./rule-base');
+var Matchers = require('./Matchers');
 
 //class definition
 module.exports = global.usingPackage.from(ruleBase).factory(function(pub, prot, unfold){
@@ -28,7 +29,7 @@ module.exports = global.usingPackage.from(ruleBase).factory(function(pub, prot, 
 
       //replace obj() call with matchersGatherer
       var currentFn = prot.objProt.exec;
-      prot.objProt.exec = matchersGatherer;
+      prot.objProt.exec = matchersGatherer({});
 
       //setup the finish callback
       return function(matcher){
@@ -45,6 +46,23 @@ module.exports = global.usingPackage.from(ruleBase).factory(function(pub, prot, 
 
     }
   });
+
+  prot.describe = function(){
+    var cMatcher=prot.contextMatcher, aMatchers = prot.argumentMatchers;
+
+    var desc = '';
+    aMatchers.forEach(function(e, i){
+      desc+=(i>0?', ':'')+prot.describeItem(e);
+    });
+
+    if(cMatcher===prot.matchers.newInstance){
+      return 'new '+prot.describeItem(prot.identifiers.reference)+'('+desc+')';
+    } else if(cMatcher && cMatcher['using:sameContext']){
+      return prot.describeItem(prot.identifiers.reference)+'('+desc+')';
+    } else {
+      return prot.describeItem(prot.identifiers.reference)+'.apply('+prot.describeItem(cMatcher)+', ['+desc+']);'
+    }
+  }
 
   prot.destroyHook = function(){
 

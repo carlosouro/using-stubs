@@ -37,8 +37,29 @@ module.exports = global.usingPackage.from(ruleBase).factory(function(pub, prot, 
     //replace require() with our override callback
     prot.previousFn = Module._load;
     Module._load = function(request, parent){
-      return prot.exec.call(this, request, parent, Module._resolveFilename(request, parent));
+      var v = prot.exec.call(this, request, parent, Module._resolveFilename(request, parent));
+      //console.log(v);
+      return v;
     }
+
+    //override stalker behaviour (always requires first())
+    var originalFirst = pub.first;
+    var originalFollow = pub.follow;
+
+    pub.first = function(){
+      pub.follow = originalFollow;
+      pub.first = originalFirst;
+      return pub.first();
+    }
+
+    delete pub.follow;
+    delete pub.from;
+    delete pub.to;
+    delete pub.the;
+  }
+
+  prot.describe = function(){
+    return 'require("'+prot.identifiers.path+'")';
   }
 
   prot.destroyHook = function(){
