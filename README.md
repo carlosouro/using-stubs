@@ -9,16 +9,14 @@ Enables you to validate and override behaviour of nested pieces of code such as 
 This library is inspired on [node-gently](https://github.com/alex-seville/blanket), [MockJS](https://github.com/badoo/MockJS) and [mock-require](https://github.com/boblauer/mock-require).
 
 ---
-##API
-
-### <a name="gettingStarted"></a>Getting started
+## <a name="gettingStarted"></a>Getting started
 
 ```JavaScript
 var using = require('using-stubs')(); //an instance of using
 ```
 
 
-### <a name="methods"></a>Matching, following and stubbing in-depth code
+## <a name="methods"></a>Matching, following and stubbing in-depth code
 
 _using(object, 'method').like( foo.method("example") );_
 
@@ -104,7 +102,9 @@ new Baz(function(str){
 
 ```
 
-**Require: intercepting require() in Node.js:**
+## <a name="require"></a>Node.js require()
+
+**Intercepting require() in Node.js:**
 
 Consider the example object at the top of this documentation is encapsulated in node module _example.js_
 ```JavaScript
@@ -142,7 +142,9 @@ foo.bar(); //prints "HI!"
 * _using_ will automatically pin the rule to the file given by the _using.require(path)_ relative path to the current module path, meaning it will override the target file even if you require it from a different module later on any other relative path (subfolders, etc)
 * _using.require(module)_ also works for any module (not necessarily a path) and the match in this case is pinned down to all calls to the given module string exactly (independent of module location or dependecy resolution)
 
-**Clean: Examples on removing all or part of set rules :**
+### <a name="clean"></a>Cleaning rules
+
+**Examples on removing all or part of set rules :**
 ```JavaScript
 //clean all rules for a given method
 using(obj, 'prop').clean();
@@ -156,11 +158,82 @@ using.clean();
 //Note: .clean() only cleans rules that have been set via the given using instance (see first item on documentation)
 ```
 
-**API: All API methods at once example:**
+## <a name="matchers"></a>matchers
+
+**parameter matchers**
+
+The simplest way to exactly match a parameter is by specifying it directly.
+```JavaScript
+using(foo, 'bar').like( foo.bar(5) );
+
+//
+foo.bar(5); //matches
+foo.bar("5"); //does not match
+```
+
+Or, you can use any callback as a matcher (returning true matches)
+```JavaScript
+function divisibleBy3(param){
+  return typeof(param)==='number' && (param % 3) === 0;
+}
+
+using(foo, 'bar').like( foo.bar(divisibleBy3) );
+
+//
+foo.bar(6); //matches
+foo.bar(7); //does not match
+```
+
+
+**Context matchers**
+
+Parameter matching even works on context
+```JavaScript
+using(foo, 'bar').like( foo.bar.call(using.anObjectLike({'a':'a'}), 5) );
+
+//
+foo.bar.apply({'a':'a'}, [5]); //matches
+foo.bar(5); //does not match
+```
+
+using-stubs provides you a few common matchers for ease of use
+```JavaScript
+using.aString            //matches any string
+using.aStringLike(regex) //matches the regular expression
+using.anInt              //matches any integer
+using.aNumber            //matches any number
+using.anObject           //matches any object (not null)
+using.aFunction          //matches any function
+using.typeOf(type)       //tests typeOf(parameter)===type
+using.instanceOf(Class)  //tests parameter instanceOf Class
+using.something          //matches parameter!==undefined
+using.anything           //matches any param as long as it is set in the argument list (even undefined)
+
+using.atLeast(x)     //a number > x
+using.atMost(x)      //a number < x
+using.between(x, y)  //a number > x && < y
+using.oneOf(a1, [[a2], ...[aN]])     //matches one of the given parameters
+using.otherThan(a1, [[a2], ...[aN]]) //matches if none of the given parameters match
+
+using.anObjectLike(obj, [boolean strict])  //deep compare to given object
+                         //strict - defaults to non-strict (==) comparison (false)
+
+using.everything         //special matcher - all arguments from this point onward
+                         //will be matched, even if not set in the argument list.
+                         //Eg. foo("a", using.everything) will match foo("a"), foo("a", "one")
+                         //or even foo("a", 1, 2, 3, 4, 5, 6);
+```
+
+---
+---
+
+## <a name="full"></a>Putting it all together
+
+**An example using the most relevant API methods all at once:**
+
 ```JavaScript
 
-//using all API methods in one chain
-
+//using most API methods in one chain
 using.require('./example').first().follow(function(foo){
 
   using(foo, 'bar')
@@ -211,69 +284,3 @@ instance.test(); //does nothing
 **Note:**
 The interfaces .first(), .the(), .from(), .to(), and .follow() are inherited from the stalker-pattern API
 Take a look at [stalker-pattern reference](https://github.com/carlosouro/stalker-pattern) in order to further understand the pattern and its chaining API
-
-
----
----
-## <a name="matchers"></a>matchers
-
-#### <a name="paramMatchers"></a>parameter matchers
-
-The simplest way to exactly match a parameter is by specifying it directly.
-```JavaScript
-using(foo, 'bar').like( foo.bar(5) );
-
-//
-foo.bar(5); //matches
-foo.bar("5"); //does not match
-```
-
-Or, you can use any callback as a matcher (returning true matches)
-```JavaScript
-function divisibleBy3(param){
-	return typeof(param)==='number' && (param % 3) === 0;
-}
-
-using(foo, 'bar').like( foo.bar(divisibleBy3) );
-
-//
-foo.bar(6); //matches
-foo.bar(7); //does not match
-```
-
-Parameter matching even works on context
-```JavaScript
-using(foo, 'bar').like( foo.bar.call(using.anObjectLike({'a':'a'}), 5) );
-
-//
-foo.bar.apply({'a':'a'}, [5]); //matches
-foo.bar(5); //does not match
-```
-
-using-stubs provides you a few common matchers for ease of use
-```JavaScript
-using.aString            //matches any string
-using.aStringLike(regex) //matches the regular expression
-using.anInt              //matches any integer
-using.aNumber            //matches any number
-using.anObject           //matches any object (not null)
-using.aFunction          //matches any function
-using.typeOf(type)       //tests typeOf(parameter)===type
-using.instanceOf(Class)  //tests parameter instanceOf Class
-using.something          //matches parameter!==undefined
-using.anything           //matches any param as long as it is set in the argument list (even undefined)
-
-using.atLeast(x)     //a number > x
-using.atMost(x)      //a number < x
-using.between(x, y)  //a number > x && < y
-using.oneOf(a1, [[a2], ...[aN]])     //matches one of the given parameters
-using.otherThan(a1, [[a2], ...[aN]]) //matches if none of the given parameters match
-
-using.anObjectLike(obj, [boolean strict])  //deep compare to given object
-                         //strict - defaults to non-strict (==) comparison (false)
-
-using.everything         //special matcher - all arguments from this point onward
-                         //will be matched, even if not set in the argument list.
-                         //Eg. foo("a", using.everything) will match foo("a"), foo("a", "one")
-                         //or even foo("a", 1, 2, 3, 4, 5, 6);
-```
