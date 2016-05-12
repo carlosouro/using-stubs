@@ -36,7 +36,7 @@ function ClassExample(){
 
 //object foo
 var foo = {
-	bar: function(){
+  bar: function(){
     return {
       Baz: ClassExample
     }
@@ -138,9 +138,9 @@ foo.bar(); //prints "HI!"
 
 ```
 **Notes:**
-* The _using.require()_ interface only has a forceful _.first()_ API available (not a direct _.follow()_) - this happens because a _require()_ in node **always returns the same instance** and thus _.first()_ avoids triggering a _.follow()_ every time a _require()_ is called per file and avoiding override behaviour on that instance over and over
-* _using_ will automatically pin the rule to the file given by the _using.require(path)_ relative path to the current module path, meaning it will override the target file even if you require it from a different module later on any other relative path (subfolders, etc)
-* _using.require(module)_ also works for any module (not necessarily a path) and the match in this case is pinned down to all calls to the given module string exactly (independent of module location or dependecy resolution)
+* The _using.require()_ interface only has a forceful _.first()_ API available (not a direct _.follow()_) - this happens because a _require()_ in node **always returns the same instance** and thus _.first()_ avoids triggering a _.follow()_ every time a _require()_ is called per file and avoids overriding behaviour on that instance over and over
+* _using_ will automatically pin the rule (eg. _using.require(path)_) to the target file given by the relative path to the current module path, meaning it will override the target module even if you require it from a different module later located on any other relative path (subfolders, etc)
+* _using.require(module)_ also works for any module (eg. 'http' - not necessarily a path) and the match in this case is pinned down to all calls to the given module string exactly (independent of module location or dependecy resolution)
 
 ### <a name="clean"></a>Cleaning rules
 
@@ -152,7 +152,10 @@ using(obj, 'prop').clean();
 //clean all rules for classes / functions
 using(obj).clean();
 
-//clean everything - all rules for all objects and methods, classes, etc
+//clean all rules for module
+using.require('module').clean();
+
+//clean everything - all rules for all objects and methods, modules, classes, etc
 using.clean();
 
 //Note: .clean() only cleans rules that have been set via the given using instance (see first item on documentation)
@@ -233,11 +236,13 @@ using.everything         //special matcher - all arguments from this point onwar
 
 ```JavaScript
 
+var scope = {};
+
 //using most API methods in one chain
 using.require('./example').first().follow(function(foo){
 
   using(foo, 'bar')
-  .like( foo.bar(using.aString) ) //only when called like this
+  .like( foo.bar.call(scope, using.aString) ) //only when called like this
   .stub(function(fn, args, context){
 
     //eg. replace a calling argument but still return the original function result
@@ -265,8 +270,10 @@ using.require('./example').first().follow(function(foo){
 })
 
 //running the test
-var a = foo.bar("a"); //does nothing
-var b = foo.bar("b"); //prints "the(2) foo.bar()"
+foo.bar("-"); //does nothing (does not match on context)
+
+var a = foo.bar.call(scope, "a"); //does nothing (1st match)
+var b = foo.bar.call(scope, "b"); //prints "the(2) foo.bar()"
 
 var instance = new b.Baz(); //prints "first() instance of obj.Baz"
 
