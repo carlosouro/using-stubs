@@ -104,6 +104,44 @@ new Baz(function(str){
 
 ```
 
+**Require: intercepting require() in Node.js:**
+
+Consider the example object at the top of this documentation is encapsulated in node module _example.js_
+```JavaScript
+//example.js
+
+// foo code
+// ...
+
+
+module.exports = foo;
+```
+
+Let's intercept and modify it
+```JavaScript
+//
+using.require('./example').first().follow(function(foo){
+
+  using(foo, 'bar')
+  .follow(function(){
+
+    console.log("HI!")
+
+  });
+
+})
+
+//running the test
+var foo = require('./example')
+
+foo.bar(); //prints "HI!"
+
+```
+**Notes:**
+* The _using.require()_ interface only has a forceful _.first()_ API available (not a direct _.follow()_) - this happens because a _require()_ in node **always returns the same instance** and thus _.first()_ avoids triggering a _.follow()_ every time a _require()_ is called per file and avoiding override behaviour on that instance over and over
+* _using_ will automatically pin the rule to the file given by the _using.require(path)_ relative path to the current module path, meaning it will override the target file even if you require it from a different module later on any other relative path (subfolders, etc)
+* _using.require(module)_ also works for any module (not necessarily a path) and the match in this case is pinned down to all calls to the given module string exactly (independent of module location or dependecy resolution)
+
 **Clean: Examples on removing all or part of set rules :**
 ```JavaScript
 //clean all rules for a given method
