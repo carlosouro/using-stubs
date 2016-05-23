@@ -1,7 +1,7 @@
 {
   "name": "using-stubs",
   "description": "Deep code stubbing for node.js tests. Follow and override behaviour of infinitely nested pieces of code such as methods, require() and npm modules or even instances of classes, etc.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "",
   "author": {
     "name": "Carlos Ouro",
